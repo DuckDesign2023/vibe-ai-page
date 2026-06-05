@@ -1,0 +1,1712 @@
+<!DOCTYPE html>
+<!--
+  ============================================================================
+  DUCK.DESIGN — AI CODING (VIBE CODING) LANDING PAGE
+  ----------------------------------------------------------------------------
+  Single self-contained file: HTML + CSS + JS, no build step required.
+  Style reference: Superside AI Creative (dark + neon), adapted to Duck.design.
+
+  WORDPRESS PORTING NOTES
+  -----------------------
+  1. Quickest path: paste the <body> markup into a Gutenberg "Custom HTML"
+     block, move the <style> block into Appearance > Customize > Additional CSS
+     (or a child-theme stylesheet), and enqueue the <script> via the theme's
+     functions.php or a "Code Snippets" plugin.
+  2. Cleaner path: register a custom page template (page-ai-coding.php) and
+     drop the three parts (markup / style / script) into it.
+  3. All class names are namespaced with the "dd-" prefix to avoid collisions
+     with the active WordPress theme.
+  4. Replace the booking/Stripe CTA hrefs with the live Duck.design URLs.
+  ============================================================================
+-->
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>AI Coding & Vibe Coding — Web Development at the Speed of AI | Duck.design</title>
+<meta name="description" content="Build, deploy and scale production-ready websites 4x faster with AI Coding (Vibe Coding), engineered by Duck.design senior product leads. One flat monthly subscription." />
+
+<!-- Fonts: distinctive display (Sora), refined body (Manrope), terminal mono (JetBrains Mono) -->
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Sora:wght@400;600;700;800&family=Manrope:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet" />
+
+<style>
+/* ============================================================================
+   1. DESIGN TOKENS
+   ========================================================================== */
+:root{
+  /* Surfaces */
+  --dd-bg:        #07070A;
+  --dd-bg-2:      #0C0C11;
+  --dd-surface:   #101017;
+  --dd-surface-2: #16161F;
+  --dd-line:      rgba(255,255,255,.08);
+  --dd-line-2:    rgba(255,255,255,.14);
+
+  /* Text */
+  --dd-text:      #F4F5F7;
+  --dd-muted:     #9A9CA8;
+  --dd-faint:     #62646F;
+
+  /* Brand accents */
+  --dd-neon:      #FFCA41;   /* Duck.design brand yellow — primary accent */
+  --dd-neon-dim:  #E0A800;
+  --dd-cyan:      #4DE3FF;   /* secondary electric */
+  --dd-duck:      #FFCA41;   /* Duck.design brand yellow */
+  --dd-red:       #FF5C6C;   /* "traditional dev" muted-red side */
+
+  /* Syntax highlighting */
+  --sx-keyword:  #FF7BA9;
+  --sx-tag:      #4DE3FF;
+  --sx-attr:     #7EE787;
+  --sx-string:   #FFD43B;
+  --sx-fn:       #9D8BFF;
+  --sx-comment:  #5A5C68;
+  --sx-punct:    #7C7F8C;
+
+  /* Typography */
+  --font-display: 'Sora', sans-serif;
+  --font-body:    'Manrope', sans-serif;
+  --font-mono:    'JetBrains Mono', monospace;
+
+  /* Layout */
+  --maxw: 1240px;
+  --radius: 20px;
+  --radius-sm: 12px;
+}
+
+/* ============================================================================
+   2. RESET & BASE
+   ========================================================================== */
+*,*::before,*::after{ box-sizing:border-box; margin:0; padding:0; }
+html{ scroll-behavior:smooth; -webkit-text-size-adjust:100%; }
+body{
+  font-family:var(--font-body);
+  background:var(--dd-bg);
+  color:var(--dd-text);
+  line-height:1.6;
+  overflow-x:hidden;
+  -webkit-font-smoothing:antialiased;
+  position:relative;
+}
+/* Subtle film grain for premium depth */
+body::after{
+  content:""; position:fixed; inset:0; pointer-events:none; z-index:9999;
+  opacity:.035; mix-blend-mode:overlay;
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='3'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+}
+a{ color:inherit; text-decoration:none; }
+img,svg{ display:block; max-width:100%; }
+ul{ list-style:none; }
+button{ font-family:inherit; cursor:pointer; border:none; background:none; color:inherit; }
+
+.dd-wrap{ width:100%; max-width:var(--maxw); margin-inline:auto; padding-inline:28px; }
+section{ position:relative; }
+
+/* Reusable eyebrow / pill label */
+.dd-eyebrow{
+  display:inline-flex; align-items:center; gap:8px;
+  font-family:var(--font-mono); font-size:12.5px; letter-spacing:.14em;
+  text-transform:uppercase; color:var(--dd-neon);
+  padding:7px 14px; border:1px solid rgba(255,202,65,.28);
+  border-radius:100px; background:rgba(255,202,65,.05);
+}
+.dd-eyebrow::before{
+  content:""; width:7px; height:7px; border-radius:50%;
+  background:var(--dd-neon); box-shadow:0 0 12px var(--dd-neon);
+  animation:dd-pulse 1.8s ease-in-out infinite;
+}
+@keyframes dd-pulse{ 0%,100%{opacity:1;transform:scale(1)} 50%{opacity:.4;transform:scale(.7)} }
+
+/* Headings */
+h1,h2,h3{ font-family:var(--font-display); font-weight:800; letter-spacing:-.02em; line-height:1.04; }
+.dd-h2{ font-size:clamp(2.1rem,4.6vw,3.5rem); }
+.dd-section-head{ max-width:760px; margin-bottom:54px; }
+.dd-section-head p{ color:var(--dd-muted); font-size:1.1rem; margin-top:18px; }
+.dd-grad{
+  background:linear-gradient(100deg,var(--dd-neon),var(--dd-cyan));
+  -webkit-background-clip:text; background-clip:text; color:transparent;
+}
+
+/* Buttons */
+.dd-btn{
+  display:inline-flex; align-items:center; justify-content:center; gap:10px;
+  font-family:var(--font-display); font-weight:700; font-size:.95rem;
+  letter-spacing:.01em; padding:16px 28px; border-radius:100px;
+  transition:transform .25s ease, box-shadow .25s ease, background .25s ease;
+  white-space:nowrap;
+}
+.dd-btn--primary{
+  background:var(--dd-neon); color:#0A0A06;
+  box-shadow:0 0 0 0 rgba(255,202,65,.5);
+}
+.dd-btn--primary:hover{ transform:translateY(-2px); box-shadow:0 14px 40px -8px rgba(255,202,65,.55); }
+.dd-btn--ghost{ border:1px solid var(--dd-line-2); color:var(--dd-text); position:relative; z-index:0; }
+/* Brand-yellow fill slides in from the left on hover (slow, eased) */
+.dd-btn--ghost::before{
+  content:""; position:absolute; inset:0; z-index:-1; border-radius:inherit;
+  background:var(--dd-neon); transform:scaleX(0); transform-origin:left;
+  transition:transform .55s cubic-bezier(.2,.8,.2,1);
+}
+.dd-btn--ghost:hover{ border-color:var(--dd-neon); color:#0A0A06; transform:translateY(-2px); }
+.dd-btn--ghost:hover::before{ transform:scaleX(1); }
+.dd-btn svg{ width:18px; height:18px; }
+
+/* Glow blobs used as section atmosphere */
+.dd-glow{ position:absolute; border-radius:50%; filter:blur(120px); opacity:.45; pointer-events:none; z-index:0; }
+
+/* ============================================================================
+   3. SCROLL REVEAL
+   ========================================================================== */
+.dd-reveal{ opacity:0; transform:translateY(34px); transition:opacity .7s cubic-bezier(.2,.7,.2,1), transform .7s cubic-bezier(.2,.7,.2,1); }
+.dd-reveal.is-in{ opacity:1; transform:none; }
+.dd-reveal[data-delay="1"]{ transition-delay:.08s; }
+.dd-reveal[data-delay="2"]{ transition-delay:.16s; }
+.dd-reveal[data-delay="3"]{ transition-delay:.24s; }
+.dd-reveal[data-delay="4"]{ transition-delay:.32s; }
+@media (prefers-reduced-motion:reduce){ .dd-reveal{ opacity:1; transform:none; transition:none; } }
+
+/* ============================================================================
+   4. HEADER / NAV
+   ========================================================================== */
+.dd-header{
+  position:fixed; inset:0 0 auto 0; z-index:1000;
+  transition:background .3s ease, border-color .3s ease, backdrop-filter .3s ease;
+  border-bottom:1px solid transparent;
+}
+.dd-header.is-scrolled{
+  background:rgba(7,7,10,.72); backdrop-filter:blur(14px);
+  border-bottom:1px solid var(--dd-line);
+}
+.dd-nav{ display:flex; align-items:center; justify-content:space-between; height:72px; }
+.dd-logo{ display:flex; align-items:center; gap:10px; font-family:var(--font-display); font-weight:800; font-size:1.18rem; }
+.dd-logo-svg{ height:25px; width:auto; display:block; color:var(--dd-text); } /* wordmark inherits white via currentColor; duck belly stays brand yellow */
+.dd-logo .dd-mark{
+  width:30px; height:30px; border-radius:9px; display:grid; place-items:center;
+  background:var(--dd-neon); color:#0A0A06; font-size:1rem;
+}
+.dd-logo .dd-mark span{ transform:translateY(-1px); }
+.dd-nav-links{ display:flex; gap:30px; }
+.dd-nav-links a{ font-size:.92rem; color:var(--dd-muted); transition:color .2s; }
+.dd-nav-links a:hover{ color:var(--dd-text); }
+.dd-nav .dd-btn{ padding:11px 22px; font-size:.86rem; }
+.dd-burger{ display:none; flex-direction:column; gap:5px; }
+.dd-burger span{ width:24px; height:2px; background:var(--dd-text); border-radius:2px; }
+@media(max-width:900px){
+  .dd-nav-links{ display:none; }
+  .dd-nav .dd-btn{ display:none; }
+  .dd-burger{ display:flex; }
+}
+
+/* ============================================================================
+   5. BLOCK 1 — HERO
+   ========================================================================== */
+.dd-hero{ padding:150px 0 90px; overflow:hidden; }
+.dd-hero .dd-glow.g1{ width:520px; height:520px; background:rgba(255,202,65,.16); top:-120px; left:-120px; }
+.dd-hero .dd-glow.g2{ width:480px; height:480px; background:rgba(77,227,255,.13); bottom:-160px; right:-80px; }
+.dd-hero-grid{
+  display:grid; grid-template-columns:1.02fr 1fr; gap:56px; align-items:center;
+  position:relative; z-index:2;
+}
+.dd-hero h1{ font-size:clamp(2.5rem,5.4vw,4.4rem); margin:22px 0 24px; }
+.dd-hero h1 em{ font-style:normal; color:var(--dd-neon); }
+.dd-hero-sub{ color:var(--dd-muted); font-size:1.15rem; max-width:540px; }
+.dd-hero-cta{ display:flex; align-items:center; gap:16px; margin-top:34px; flex-wrap:wrap; }
+.dd-hero-micro{ margin-top:16px; font-size:.88rem; color:var(--dd-faint); display:flex; align-items:center; gap:8px; }
+.dd-hero-micro::before{ content:"⚡"; }
+
+/* ---- Hero IDE (the signature interactive piece) ---- */
+.dd-ide{
+  position:relative; border-radius:var(--radius); overflow:hidden;
+  border:1px solid var(--dd-line-2);
+  background:linear-gradient(180deg,#0E0E15,#0A0A10);
+  box-shadow:0 40px 120px -30px rgba(0,0,0,.9), 0 0 0 1px rgba(255,202,65,.04);
+}
+.dd-ide-bar{
+  display:flex; align-items:center; gap:14px; padding:12px 16px;
+  border-bottom:1px solid var(--dd-line); background:rgba(255,255,255,.02);
+}
+.dd-dots{ display:flex; gap:7px; }
+.dd-dots i{ width:11px; height:11px; border-radius:50%; display:block; }
+.dd-dots i:nth-child(1){ background:#FF5F57; }
+.dd-dots i:nth-child(2){ background:#FEBC2E; }
+.dd-dots i:nth-child(3){ background:#28C840; }
+.dd-ide-file{ font-family:var(--font-mono); font-size:.78rem; color:var(--dd-faint); }
+.dd-ide-file .on{ color:var(--dd-neon); }
+.dd-ide-body{ display:grid; grid-template-columns:1fr 1fr; min-height:340px; }
+
+/* Left: code editor */
+.dd-code{
+  font-family:var(--font-mono); font-size:.78rem; line-height:1.85;
+  padding:16px 12px 16px 0; border-right:1px solid var(--dd-line);
+  background:#08080D; overflow:hidden; white-space:pre;
+}
+.dd-code-line{ display:flex; }
+.dd-code-ln{ width:34px; flex:0 0 34px; text-align:right; padding-right:12px; color:#3A3C46; user-select:none; }
+.dd-code-tx{ color:#C7C9D4; }
+.tk-key{ color:var(--sx-keyword); } .tk-tag{ color:var(--sx-tag); }
+.tk-attr{ color:var(--sx-attr); } .tk-str{ color:var(--sx-string); }
+.tk-fn{ color:var(--sx-fn); } .tk-com{ color:var(--sx-comment); font-style:italic; }
+.tk-pn{ color:var(--sx-punct); }
+.dd-caret{ display:inline-block; width:7px; height:15px; background:var(--dd-neon); margin-left:1px; transform:translateY(2px); animation:dd-blink 1s steps(1) infinite; }
+@keyframes dd-blink{ 50%{opacity:0} }
+
+/* Right: live preview that builds up */
+.dd-prev{ position:relative; background:radial-gradient(120% 120% at 70% 0%,#15151E,#0B0B11); padding:18px; overflow:hidden; }
+.dd-prev-el{ opacity:0; transform:translateY(10px) scale(.98); transition:opacity .45s ease, transform .45s ease; }
+.dd-prev-el.show{ opacity:1; transform:none; }
+.dd-prev-nav{ display:flex; align-items:center; justify-content:space-between; margin-bottom:18px; }
+.dd-prev-nav b{ font-family:var(--font-display); font-size:.82rem; }
+.dd-prev-nav .dot{ width:18px; height:6px; border-radius:6px; background:var(--dd-neon); }
+.dd-prev h4{ font-family:var(--font-display); font-size:1.35rem; line-height:1.1; margin-bottom:8px; }
+.dd-prev h4 u{ text-decoration:none; color:var(--dd-neon); }
+.dd-prev p{ font-size:.72rem; color:var(--dd-muted); margin-bottom:14px; }
+.dd-prev .pbtn{ display:inline-block; font-size:.7rem; font-weight:700; padding:7px 14px; border-radius:8px; background:var(--dd-neon); color:#0A0A06; margin-bottom:16px; }
+.dd-prev-cards{ display:grid; grid-template-columns:1fr 1fr; gap:8px; }
+.dd-prev-cards div{ height:42px; border-radius:8px; border:1px solid var(--dd-line); background:rgba(255,255,255,.03); }
+/* The drifting "human hand" cursor over the preview */
+.dd-hand{ position:absolute; right:26%; top:38%; z-index:5; filter:drop-shadow(0 4px 8px rgba(0,0,0,.6)); animation:dd-hand 6s ease-in-out infinite; }
+.dd-hand svg{ width:26px; height:26px; }
+@keyframes dd-hand{
+  0%{ transform:translate(0,0); } 25%{ transform:translate(-40px,30px); }
+  50%{ transform:translate(20px,55px); } 75%{ transform:translate(-15px,10px); } 100%{ transform:translate(0,0); }
+}
+
+/* ============================================================================
+   6. TRUST BAR
+   ========================================================================== */
+.dd-trust{ padding:46px 0; border-block:1px solid var(--dd-line); }
+.dd-trust > .dd-wrap > p{ text-align:center; font-family:var(--font-mono); font-size:.74rem; letter-spacing:.18em; text-transform:uppercase; color:var(--dd-faint); margin-bottom:28px; }
+
+/* Horizontal client-logo marquee (text wordmarks; swap to SVG logos in production) */
+.dd-trust-marquee{
+  overflow:hidden;
+  -webkit-mask-image:linear-gradient(90deg,transparent,#000 8%,#000 92%,transparent);
+  mask-image:linear-gradient(90deg,transparent,#000 8%,#000 92%,transparent);
+  padding:8px 0;
+}
+.dd-trust-track{ display:flex; gap:80px; width:max-content; animation:dd-trust-scroll 42s linear infinite; align-items:center; }
+.dd-trust-marquee:hover .dd-trust-track{ animation-play-state:paused; }
+@keyframes dd-trust-scroll{ to{ transform:translateX(-50%); } }
+.dd-trust-track span{
+  font-family:var(--font-display); font-weight:700; font-size:1.55rem;
+  color:#5B5D68; letter-spacing:.01em; white-space:nowrap;
+  transition:color .25s ease, transform .25s ease;
+}
+.dd-trust-track span:hover{ color:#E2E4EC; transform:translateY(-3px); }
+
+/* ============================================================================
+   7. BLOCK 2 — HOW IT WORKS
+   ========================================================================== */
+.dd-how{ padding:110px 0; }
+.dd-steps{ display:grid; grid-template-columns:repeat(3,1fr); gap:22px; counter-reset:step; }
+.dd-step{
+  position:relative; padding:34px 28px; border-radius:var(--radius);
+  background:var(--dd-surface); border:1px solid var(--dd-line);
+  transition:transform .35s ease, border-color .35s ease, background .35s ease;
+}
+.dd-step:hover{ transform:translateY(-6px); border-color:rgba(255,202,65,.4); background:var(--dd-surface-2); }
+.dd-step-ico{
+  width:54px; height:54px; border-radius:14px; display:grid; place-items:center; margin-bottom:22px;
+  background:rgba(255,202,65,.08); border:1px solid rgba(255,202,65,.25); color:var(--dd-neon);
+}
+.dd-step-ico svg{ width:26px; height:26px; }
+.dd-step .num{ counter-increment:step; font-family:var(--font-mono); font-size:.8rem; color:var(--dd-neon); margin-bottom:10px; }
+.dd-step .num::before{ content:"0" counter(step) " /"; }
+.dd-step h3{ font-size:1.3rem; margin-bottom:12px; }
+.dd-step p{ color:var(--dd-muted); font-size:.96rem; }
+.dd-step-conn{ position:absolute; top:60px; right:-22px; width:22px; height:1px; background:linear-gradient(90deg,var(--dd-neon),transparent); z-index:2; }
+@media(max-width:860px){ .dd-step-conn{ display:none; } }
+
+/* ============================================================================
+   8. BLOCK 3 — UNIT ECONOMICS / COMPARISON
+   ========================================================================== */
+.dd-vs{ padding:110px 0; }
+.dd-vs .dd-glow{ width:520px; height:520px; background:rgba(255,202,65,.10); right:-160px; top:20%; }
+.dd-vs-grid{ display:grid; grid-template-columns:1fr 1fr; gap:24px; position:relative; z-index:2; }
+.dd-vs-col{ border-radius:var(--radius); padding:38px 34px; position:relative; }
+/* Traditional — crowded, muted, expensive */
+.dd-vs-col.trad{ background:#101015; border:1px solid var(--dd-line); }
+.dd-vs-col.trad .dd-vs-tag{ color:var(--dd-red); border-color:rgba(255,92,108,.3); background:rgba(255,92,108,.06); }
+.dd-vs-col.trad .dd-vs-price b{ color:#C9CBD4; }
+.dd-vs-col.trad li::before{ content:"✕"; color:var(--dd-red); }
+/* Duck.design — airy, neon, effortless */
+.dd-vs-col.duck{
+  background:linear-gradient(180deg,rgba(255,202,65,.07),rgba(255,202,65,.01));
+  border:1px solid rgba(255,202,65,.35);
+  box-shadow:0 30px 90px -40px rgba(255,202,65,.35);
+}
+.dd-vs-col.duck .dd-vs-tag{ color:var(--dd-neon); border-color:rgba(255,202,65,.35); background:rgba(255,202,65,.08); }
+.dd-vs-col.duck .dd-vs-price b{ color:var(--dd-neon); }
+.dd-vs-col.duck li::before{ content:"✓"; color:var(--dd-neon); }
+.dd-vs-badge{
+  position:absolute; top:-13px; right:28px; font-family:var(--font-mono); font-size:.7rem;
+  letter-spacing:.1em; text-transform:uppercase; padding:6px 14px; border-radius:100px;
+  background:var(--dd-neon); color:#0A0A06; font-weight:700;
+}
+.dd-vs-tag{ display:inline-block; font-family:var(--font-mono); font-size:.74rem; letter-spacing:.1em; text-transform:uppercase; padding:6px 12px; border:1px solid; border-radius:100px; margin-bottom:22px; }
+.dd-vs-col h3{ font-size:1.5rem; margin-bottom:6px; }
+.dd-vs-price{ font-size:.9rem; color:var(--dd-muted); margin-bottom:26px; }
+.dd-vs-price b{ font-family:var(--font-display); font-size:2rem; display:block; letter-spacing:-.02em; }
+.dd-vs-col ul li{ display:flex; gap:12px; padding:13px 0; border-top:1px solid var(--dd-line); font-size:.95rem; color:var(--dd-text); }
+.dd-vs-col li::before{ flex:0 0 auto; font-weight:700; }
+.dd-vs-col li span{ color:var(--dd-muted); }
+.dd-vs-col li b{ color:var(--dd-text); font-weight:700; }
+
+/* ============================================================================
+   9. BLOCK 4 — CORE CAPABILITIES (BENTO)
+   ========================================================================== */
+.dd-cap{ padding:110px 0; }
+.dd-bento{ display:grid; grid-template-columns:repeat(6,1fr); grid-auto-rows:minmax(190px,auto); gap:18px; }
+.dd-cell{
+  border-radius:var(--radius); padding:30px; position:relative; overflow:hidden;
+  background:var(--dd-surface); border:1px solid var(--dd-line);
+  transition:transform .35s ease, border-color .35s ease;
+}
+.dd-cell:hover{ transform:translateY(-5px); border-color:var(--dd-line-2); }
+.dd-cell::before{
+  content:""; position:absolute; inset:0; opacity:0; transition:opacity .4s ease;
+  background:radial-gradient(140% 100% at 0% 0%,rgba(255,202,65,.12),transparent 60%);
+}
+.dd-cell:hover::before{ opacity:1; }
+.dd-cell h3{ font-size:1.22rem; margin:14px 0 8px; position:relative; }
+.dd-cell p{ color:var(--dd-muted); font-size:.92rem; position:relative; }
+.dd-cell .dd-step-ico{ margin-bottom:0; }
+/* Bento spans */
+.dd-cell.c1{ grid-column:span 3; } .dd-cell.c2{ grid-column:span 3; }
+.dd-cell.c3{ grid-column:span 2; } .dd-cell.c4{ grid-column:span 2; } .dd-cell.c5{ grid-column:span 2; }
+.dd-cell.c6{ grid-column:span 6; display:flex; align-items:center; gap:26px; }
+.dd-cell.c6 .txt{ flex:1; }
+/* Mini code chip used inside featured bento cells */
+.dd-chip{ font-family:var(--font-mono); font-size:.72rem; background:#08080D; border:1px solid var(--dd-line); border-radius:10px; padding:12px 14px; margin-top:18px; color:#C7C9D4; }
+.dd-chip .tk-attr{ color:var(--sx-attr); } .dd-chip .tk-com{ color:var(--sx-comment); }
+@media(max-width:900px){
+  .dd-bento{ grid-template-columns:repeat(2,1fr); }
+  .dd-cell.c1,.dd-cell.c2,.dd-cell.c3,.dd-cell.c4,.dd-cell.c5,.dd-cell.c6{ grid-column:span 2; }
+  .dd-cell.c6{ flex-direction:column; align-items:flex-start; }
+}
+
+/* ============================================================================
+   10. BLOCK 5 — TECH STACK MARQUEE
+   ========================================================================== */
+.dd-stack{ padding:90px 0; border-block:1px solid var(--dd-line); background:var(--dd-bg-2); }
+.dd-stack .dd-section-head{ text-align:center; margin-inline:auto; }
+.dd-marquee{ overflow:hidden; -webkit-mask-image:linear-gradient(90deg,transparent,#000 12%,#000 88%,transparent); mask-image:linear-gradient(90deg,transparent,#000 12%,#000 88%,transparent); margin-top:30px; padding:18px 0; }
+.dd-marquee-track{ display:flex; gap:18px; width:max-content; animation:dd-scroll 55s linear infinite; }
+.dd-marquee:hover .dd-marquee-track{ animation-play-state:paused; }
+@keyframes dd-scroll{ to{ transform:translateX(-50%); } }
+.dd-badge{
+  display:flex; align-items:center; gap:12px; padding:16px 24px; border-radius:14px;
+  background:var(--dd-surface); border:1px solid var(--dd-line); white-space:nowrap;
+  font-family:var(--font-display); font-weight:700; font-size:1.02rem;
+}
+.dd-badge i{ width:9px; height:9px; border-radius:50%; background:var(--dd-neon); box-shadow:0 0 10px var(--dd-neon); }
+.dd-badge small{ font-family:var(--font-mono); font-weight:400; font-size:.72rem; color:var(--dd-faint); }
+
+/* ============================================================================
+   11. BLOCK 6 — PRICING
+   ========================================================================== */
+.dd-price-sec{ padding:120px 0; }
+.dd-price-sec .dd-glow{ width:600px; height:600px; background:rgba(77,227,255,.10); left:50%; top:30%; transform:translateX(-50%); }
+.dd-price-grid{ display:grid; grid-template-columns:.85fr 1.15fr; gap:30px; align-items:start; position:relative; z-index:2; }
+.dd-price-card{
+  border-radius:26px; padding:44px; position:relative; overflow:hidden;
+  background:linear-gradient(180deg,#13131C,#0B0B11);
+  border:1px solid rgba(255,202,65,.4);
+  box-shadow:0 50px 130px -40px rgba(255,202,65,.4);
+}
+.dd-price-card::before{ content:""; position:absolute; inset:0; background:radial-gradient(120% 80% at 100% 0%,rgba(255,202,65,.12),transparent 55%); }
+.dd-price-top{ display:flex; align-items:flex-end; gap:6px; position:relative; }
+.dd-price-top .amt{ font-family:var(--font-display); font-weight:800; font-size:3.6rem; letter-spacing:-.03em; }
+.dd-price-top .per{ color:var(--dd-muted); margin-bottom:12px; }
+.dd-price-card .lead{ color:var(--dd-muted); margin:8px 0 26px; position:relative; }
+.dd-price-card .dd-btn{ width:100%; position:relative; margin-bottom:14px; }
+.dd-price-card .guarantee{ text-align:center; font-size:.84rem; color:var(--dd-faint); position:relative; }
+.dd-price-card .guarantee b{ color:var(--dd-duck); }
+.dd-price-list li{ display:flex; gap:12px; padding:12px 0; border-top:1px solid var(--dd-line); font-size:.96rem; }
+.dd-price-list li::before{ content:"✓"; color:var(--dd-neon); font-weight:700; }
+.dd-price-intro h2{ margin-bottom:18px; }
+.dd-price-intro p{ color:var(--dd-muted); font-size:1.08rem; }
+
+/* ============================================================================
+   12. BLOCK 7 — FAQ
+   ========================================================================== */
+.dd-faq{ padding:110px 0; }
+.dd-faq-grid{ display:grid; grid-template-columns:.7fr 1.3fr; gap:50px; align-items:start; }
+.dd-acc-item{ border-bottom:1px solid var(--dd-line); }
+.dd-acc-q{ width:100%; display:flex; align-items:center; justify-content:space-between; gap:20px; text-align:left; padding:26px 0; font-family:var(--font-display); font-weight:700; font-size:1.15rem; transition:color .2s; }
+.dd-acc-q:hover{ color:var(--dd-neon); }
+.dd-acc-ico{ flex:0 0 auto; width:30px; height:30px; border-radius:50%; border:1px solid var(--dd-line-2); display:grid; place-items:center; position:relative; transition:.3s; }
+.dd-acc-ico::before,.dd-acc-ico::after{ content:""; position:absolute; background:var(--dd-text); transition:.3s; }
+.dd-acc-ico::before{ width:12px; height:2px; } .dd-acc-ico::after{ width:2px; height:12px; }
+.dd-acc-item.open .dd-acc-ico{ background:var(--dd-neon); border-color:var(--dd-neon); }
+.dd-acc-item.open .dd-acc-ico::before,.dd-acc-item.open .dd-acc-ico::after{ background:#0A0A06; }
+.dd-acc-item.open .dd-acc-ico::after{ transform:scaleY(0); }
+.dd-acc-a{ max-height:0; overflow:hidden; transition:max-height .4s ease; }
+.dd-acc-a p{ color:var(--dd-muted); padding-bottom:26px; max-width:680px; }
+
+/* ============================================================================
+   13. BLOCK 8 — FINAL CTA
+   ========================================================================== */
+.dd-final{ padding:40px 0 110px; }
+.dd-final-box{
+  border-radius:30px; padding:64px 56px; position:relative; overflow:hidden;
+  background:linear-gradient(135deg,#0E0E16,#08080C); border:1px solid var(--dd-line-2);
+  display:grid; grid-template-columns:1.1fr .9fr; gap:50px; align-items:center;
+}
+.dd-final-box .dd-glow{ width:420px; height:420px; background:rgba(255,202,65,.18); top:-100px; left:-60px; }
+.dd-final h2{ font-size:clamp(2rem,4vw,3rem); margin-bottom:18px; position:relative; }
+.dd-final p{ color:var(--dd-muted); font-size:1.1rem; margin-bottom:30px; position:relative; }
+/* Mock calendar booking widget */
+.dd-cal{ position:relative; background:var(--dd-surface); border:1px solid var(--dd-line); border-radius:var(--radius); padding:22px; }
+.dd-cal-top{ display:flex; align-items:center; justify-content:space-between; margin-bottom:16px; font-family:var(--font-display); font-weight:700; font-size:.95rem; }
+.dd-cal-top .nav{ display:flex; gap:8px; color:var(--dd-faint); }
+.dd-cal-grid{ display:grid; grid-template-columns:repeat(7,1fr); gap:6px; }
+.dd-cal-grid b{ font-family:var(--font-mono); font-size:.64rem; color:var(--dd-faint); text-align:center; text-transform:uppercase; }
+.dd-cal-grid button{ aspect-ratio:1; border-radius:9px; font-size:.8rem; color:var(--dd-muted); border:1px solid transparent; transition:.2s; }
+.dd-cal-grid button:hover{ background:rgba(255,202,65,.08); color:var(--dd-text); }
+.dd-cal-grid button.free{ color:var(--dd-text); border-color:var(--dd-line); }
+.dd-cal-grid button.sel{ background:var(--dd-neon); color:#0A0A06; font-weight:700; }
+.dd-cal-grid button.off{ opacity:.25; pointer-events:none; }
+.dd-cal-slots{ display:flex; gap:8px; margin-top:16px; }
+.dd-cal-slots button{ flex:1; font-family:var(--font-mono); font-size:.74rem; padding:9px 0; border-radius:9px; border:1px solid var(--dd-line); color:var(--dd-muted); transition:.2s; }
+.dd-cal-slots button:hover,.dd-cal-slots button.sel{ border-color:var(--dd-neon); color:var(--dd-neon); }
+
+/* ============================================================================
+   14. FOOTER
+   ========================================================================== */
+.dd-footer{ border-top:1px solid var(--dd-line); padding:54px 0 40px; background:var(--dd-bg-2); }
+.dd-footer-grid{ display:flex; justify-content:space-between; flex-wrap:wrap; gap:32px; margin-bottom:40px; }
+.dd-footer .dd-logo{ margin-bottom:14px; }
+.dd-footer-col h5{ font-family:var(--font-display); font-size:.85rem; text-transform:uppercase; letter-spacing:.08em; color:var(--dd-faint); margin-bottom:16px; }
+.dd-footer-col a{ display:block; color:var(--dd-muted); font-size:.92rem; padding:5px 0; transition:color .2s; }
+.dd-footer-col a:hover{ color:var(--dd-neon); }
+.dd-footer-bottom{ display:flex; justify-content:space-between; flex-wrap:wrap; gap:12px; padding-top:26px; border-top:1px solid var(--dd-line); font-size:.84rem; color:var(--dd-faint); }
+.dd-footer-about{ max-width:280px; }
+.dd-footer-about p{ color:var(--dd-muted); font-size:.9rem; }
+
+/* ============================================================================
+   15. RESPONSIVE
+   ========================================================================== */
+@media(max-width:980px){
+  .dd-hero-grid,.dd-vs-grid,.dd-price-grid,.dd-faq-grid,.dd-final-box{ grid-template-columns:1fr; }
+  .dd-steps{ grid-template-columns:1fr; }
+  .dd-hero{ padding-top:120px; }
+  .dd-final-box{ padding:42px 30px; }
+}
+@media(max-width:560px){
+  .dd-wrap{ padding-inline:20px; }
+  .dd-ide-body{ grid-template-columns:1fr; }
+  .dd-prev{ display:none; } /* keep the code editor as the hero focus on small screens */
+  .dd-hero h1{ font-size:2.3rem; }
+  .dd-price-top .amt{ font-size:2.8rem; }
+}
+/* ============================================================================
+   16. ENHANCED HOVER INTERACTIONS
+   ========================================================================== */
+
+/* --- Buttons: light sweep + arrow nudge --- */
+.dd-btn{ position:relative; overflow:hidden; }
+.dd-btn::after{
+  content:""; position:absolute; top:0; left:-160%; width:55%; height:100%;
+  background:linear-gradient(120deg,transparent,rgba(255,255,255,.5),transparent);
+  transform:skewX(-22deg); transition:left .9s cubic-bezier(.2,.7,.2,1); pointer-events:none;
+}
+.dd-btn:hover::after{ left:170%; }
+.dd-btn svg{ transition:transform .3s ease; }
+.dd-btn:hover svg{ transform:translateX(5px); }
+
+/* --- Nav links: growing underline --- */
+.dd-nav-links a{ position:relative; }
+.dd-nav-links a::after{
+  content:""; position:absolute; left:0; bottom:-5px; width:100%; height:2px;
+  background:var(--dd-neon); border-radius:2px; transform:scaleX(0); transform-origin:left;
+  transition:transform .3s cubic-bezier(.2,.7,.2,1);
+}
+.dd-nav-links a:hover::after{ transform:scaleX(1); }
+
+/* --- Logo: subtle lift --- */
+.dd-logo{ transition:transform .3s ease; }
+.dd-logo:hover{ transform:scale(1.04); }
+
+/* --- Hero IDE: lift + ambient glow --- */
+.dd-ide{ transition:transform .5s cubic-bezier(.2,.8,.2,1), box-shadow .5s ease; }
+.dd-ide:hover{ transform:translateY(-5px); box-shadow:0 55px 150px -30px rgba(0,0,0,.95), 0 0 70px -24px rgba(255,202,65,.28); }
+
+/* --- Trust marquee: graceful fallback for reduced motion --- */
+@media (prefers-reduced-motion:reduce){
+  .dd-trust-marquee{ overflow-x:auto; -webkit-mask-image:none; mask-image:none; }
+  .dd-trust-track{ animation:none !important; }
+}
+
+/* --- Step / bento icons: pop + rotate when parent is hovered --- */
+.dd-step-ico{ transition:transform .45s cubic-bezier(.2,.8,.2,1), background .35s ease, border-color .35s ease; }
+.dd-step:hover .dd-step-ico,
+.dd-cell:hover .dd-step-ico{ transform:rotate(-8deg) scale(1.14); background:rgba(255,202,65,.18); border-color:rgba(255,202,65,.55); }
+
+/* --- Cursor-follow spotlight (driven by --mx / --my set in JS) --- */
+.dd-step, .dd-vs-col{ position:relative; }
+.dd-step::after, .dd-vs-col::after, .dd-award::after{
+  content:""; position:absolute; inset:0; border-radius:inherit; pointer-events:none;
+  opacity:0; transition:opacity .4s ease;
+  background:radial-gradient(420px circle at var(--mx,50%) var(--my,50%), rgba(255,202,65,.13), transparent 60%);
+}
+.dd-step:hover::after, .dd-vs-col:hover::after, .dd-award:hover::after{ opacity:1; }
+.dd-vs-col.trad:hover{ border-color:rgba(255,255,255,.2); }
+
+/* Bento + price spotlights now track the cursor */
+.dd-cell::before{ background:radial-gradient(380px circle at var(--mx,50%) var(--my,50%), rgba(255,202,65,.16), transparent 55%); }
+.dd-price-card::before{ background:radial-gradient(480px circle at var(--mx,50%) var(--my,50%), rgba(255,202,65,.14), transparent 55%); transition:background .2s ease; }
+
+/* Smooth tilt return (mousemove sets a faster inline transition, mouseleave restores this) */
+.dd-vs-col, .dd-price-card{ transition:transform .5s cubic-bezier(.2,.8,.2,1), border-color .35s ease, box-shadow .35s ease; }
+
+/* --- Tech badges: lift + neon glow --- */
+.dd-badge{ transition:transform .3s cubic-bezier(.2,.8,.2,1), border-color .3s ease, box-shadow .3s ease; }
+.dd-badge:hover{ transform:translateY(-6px) scale(1.04); border-color:rgba(255,202,65,.45); box-shadow:0 16px 36px -12px rgba(255,202,65,.32); }
+.dd-badge i{ transition:box-shadow .3s ease, transform .3s ease; }
+.dd-badge:hover i{ box-shadow:0 0 18px var(--dd-neon); transform:scale(1.35); }
+
+/* --- FAQ: growing accent bar + label shift --- */
+.dd-acc-item{ position:relative; }
+.dd-acc-item::before{
+  content:""; position:absolute; left:0; top:26px; width:3px; height:0; border-radius:3px;
+  background:var(--dd-neon); transition:height .3s cubic-bezier(.2,.8,.2,1);
+}
+.dd-acc-item:hover::before, .dd-acc-item.open::before{ height:30px; }
+.dd-acc-q{ transition:color .2s ease, padding-left .3s cubic-bezier(.2,.8,.2,1); }
+.dd-acc-item:hover .dd-acc-q, .dd-acc-item.open .dd-acc-q{ padding-left:16px; }
+
+/* --- Footer links: slide --- */
+.dd-footer-col a{ transition:color .2s ease, transform .2s ease; }
+.dd-footer-col a:hover{ transform:translateX(5px); }
+
+/* --- Eyebrow pills: subtle lift --- */
+.dd-eyebrow{ transition:transform .3s ease, border-color .3s ease, background .3s ease; }
+.dd-eyebrow:hover{ transform:translateY(-2px); border-color:rgba(255,202,65,.5); }
+
+/* Respect reduced-motion preferences */
+@media (prefers-reduced-motion:reduce){
+  .dd-btn::after,.dd-btn--ghost::before,.dd-badge,.dd-trust-track span,.dd-step-ico,.dd-logo,.dd-ide,.dd-footer-col a,.dd-acc-q{ transition:none !important; }
+  .dd-btn:hover::after{ left:-160%; }
+}
+/* ============================================================================
+   17. WALL OF LOVE (testimonials, auto-scrolling columns)
+   ========================================================================== */
+.dd-love{ padding:120px 0; position:relative; overflow:hidden; }
+.dd-love .dd-glow{ width:520px; height:520px; background:rgba(255,202,65,.10); left:-160px; top:30%; }
+
+.dd-love-head{ text-align:center; max-width:760px; margin:0 auto 36px; }
+.dd-love-head h2{ margin-top:18px; }
+.dd-love-head p{ color:var(--dd-muted); margin-top:18px; font-size:1.1rem; }
+
+/* Trust-stat pills (Trustpilot / G2 / Clutch style) */
+.dd-love-stats{ display:flex; gap:14px; justify-content:center; flex-wrap:wrap; margin-bottom:56px; }
+.dd-love-stat{ display:flex; align-items:center; gap:14px; padding:14px 22px; border:1px solid var(--dd-line); border-radius:100px; background:var(--dd-surface); transition:border-color .3s ease, transform .3s ease; }
+.dd-love-stat:hover{ border-color:rgba(255,202,65,.45); transform:translateY(-3px); }
+.dd-love-stat .src{ font-family:var(--font-mono); font-size:.7rem; color:var(--dd-faint); text-transform:uppercase; letter-spacing:.14em; }
+.dd-love-stat .score{ font-family:var(--font-display); font-weight:800; font-size:1.35rem; line-height:1; }
+.dd-love-stat .stars{ color:var(--dd-neon); font-size:.95rem; letter-spacing:2px; }
+
+/* The infinite-scrolling wall */
+.dd-love-wall{ position:relative; }
+.dd-love-cols{
+  display:grid; grid-template-columns:repeat(3,1fr); gap:18px; height:760px;
+  -webkit-mask-image:linear-gradient(180deg,transparent,#000 10%,#000 90%,transparent);
+  mask-image:linear-gradient(180deg,transparent,#000 10%,#000 90%,transparent);
+}
+.dd-love-col{ overflow:hidden; position:relative; }
+.dd-love-track{ display:flex; flex-direction:column; gap:18px; animation:dd-love-up 38s linear infinite; will-change:transform; }
+.dd-love-col.rev  .dd-love-track{ animation-name:dd-love-down; animation-duration:46s; }
+.dd-love-col.slow .dd-love-track{ animation-duration:55s; }
+.dd-love-wall:hover .dd-love-track{ animation-play-state:paused; }
+@keyframes dd-love-up   { from{ transform:translateY(0); }    to{ transform:translateY(-50%); } }
+@keyframes dd-love-down { from{ transform:translateY(-50%); } to{ transform:translateY(0); } }
+
+/* Testimonial card */
+.dd-tcard{
+  background:var(--dd-surface); border:1px solid var(--dd-line); border-radius:18px;
+  padding:22px; position:relative; overflow:hidden;
+  transition:transform .35s cubic-bezier(.2,.8,.2,1), border-color .35s ease, box-shadow .35s ease;
+}
+.dd-tcard:hover{ transform:translateY(-5px); border-color:rgba(255,202,65,.4); box-shadow:0 18px 40px -18px rgba(0,0,0,.55), 0 0 0 1px rgba(255,202,65,.08); }
+/* Yellow "spotlight" cards for visual rhythm */
+.dd-tcard.hi{ background:linear-gradient(160deg,var(--dd-neon),#E0A800); color:#0A0A06; border-color:transparent; }
+.dd-tcard.hi:hover{ box-shadow:0 22px 50px -18px rgba(255,202,65,.45); }
+.dd-tcard-top{ display:flex; align-items:center; gap:12px; margin-bottom:14px; }
+.dd-avatar{ width:42px; height:42px; border-radius:50%; flex:0 0 auto; display:grid; place-items:center; font-family:var(--font-display); font-weight:700; font-size:.92rem; color:#fff; letter-spacing:.02em; }
+.dd-tcard .name{ font-family:var(--font-display); font-weight:700; font-size:.98rem; line-height:1.2; }
+.dd-tcard .role{ font-size:.8rem; color:var(--dd-muted); margin-top:3px; }
+.dd-tcard.hi .role{ color:rgba(10,10,6,.65); }
+.dd-tcard .quote{ font-size:.95rem; line-height:1.55; }
+.dd-tcard .quote::before{ content:"\201C"; font-family:var(--font-display); font-size:1.6rem; line-height:0; vertical-align:-.35em; color:var(--dd-neon); margin-right:3px; }
+.dd-tcard.hi .quote::before{ color:rgba(10,10,6,.45); }
+.dd-tcard .tfooter{ display:flex; justify-content:space-between; align-items:center; margin-top:18px; padding-top:14px; border-top:1px solid var(--dd-line); }
+.dd-tcard.hi .tfooter{ border-color:rgba(10,10,6,.18); }
+.dd-tcard .src{ font-family:var(--font-mono); font-size:.7rem; text-transform:uppercase; letter-spacing:.12em; color:var(--dd-faint); }
+.dd-tcard.hi .src{ color:rgba(10,10,6,.7); }
+.dd-tcard .stars{ color:var(--dd-duck); letter-spacing:1px; font-size:.85rem; }
+.dd-tcard.hi .stars{ color:#0A0A06; }
+
+@media(max-width:900px){
+  .dd-love-cols{ grid-template-columns:repeat(2,1fr); height:680px; }
+  .dd-love-col:nth-child(3){ display:none; }
+}
+@media(max-width:560px){
+  .dd-love-cols{ grid-template-columns:1fr; height:600px; }
+  .dd-love-col:nth-child(2){ display:none; }
+}
+
+/* Pause auto-scroll for reduced-motion users */
+@media (prefers-reduced-motion:reduce){
+  .dd-love-track{ animation:none !important; }
+}
+
+/* ============================================================================
+   18. AWARDS — compact medallions placed inside the Pricing intro column.
+   Captions sit BELOW each circle to keep the medallion clean and small.
+   ========================================================================== */
+.dd-awards{
+  display:grid; grid-template-columns:repeat(4,1fr); gap:14px;
+  margin-top:38px; max-width:460px;
+}
+.dd-award-item{ display:flex; flex-direction:column; align-items:center; gap:10px; }
+.dd-award-item .cap{
+  font-size:.66rem; color:var(--dd-muted); text-align:center; line-height:1.35;
+  letter-spacing:.005em; padding:0 2px;
+}
+
+.dd-award{
+  aspect-ratio:1; width:100%;
+  background:radial-gradient(130% 100% at 50% 0%, var(--dd-surface-2), var(--dd-surface));
+  border:1px solid var(--dd-line); border-radius:50%;
+  padding:12px 8px;
+  display:flex; flex-direction:column; align-items:center; justify-content:center; text-align:center; gap:6px;
+  position:relative; overflow:hidden;
+  transition:transform .35s cubic-bezier(.2,.8,.2,1), border-color .35s ease, box-shadow .35s ease;
+  text-decoration:none; color:inherit;
+}
+.dd-award:hover{ border-color:rgba(255,202,65,.5); box-shadow:0 14px 36px -14px rgba(255,202,65,.4); }
+
+.dd-award .stars{ color:var(--dd-neon); font-size:.6rem; letter-spacing:1.5px; line-height:1; }
+.dd-award .src{ font-family:var(--font-display); font-weight:800; font-size:.72rem; letter-spacing:-.01em; line-height:1.08; color:var(--dd-text); }
+.dd-award .src .accent{ color:var(--dd-neon); }
+.dd-award .src .lower{ text-transform:lowercase; letter-spacing:-.02em; }
+.dd-award .src .small{ font-size:.48rem; letter-spacing:.16em; font-weight:700; opacity:.75; display:block; margin-bottom:1px; }
+
+/* When the price grid stacks on tablets, center the awards block */
+@media(max-width:980px){
+  .dd-awards{ margin-inline:auto; }
+}
+@media(max-width:480px){
+  .dd-awards{ grid-template-columns:repeat(2,1fr); gap:14px 18px; max-width:300px; }
+  .dd-award-item .cap{ font-size:.7rem; }
+  .dd-award .src{ font-size:.85rem; }
+  .dd-award .stars{ font-size:.7rem; }
+}
+
+/* ============================================================================
+   19. LIGHT THEME OVERHAUL (Awesomic-inspired: warm, soft, airy)
+   ----------------------------------------------------------------------------
+   The page flips from dark to a warm cream palette, but three "anchor" zones
+   stay dark on purpose — the hero IDE, the pricing card and the final CTA —
+   to give the layout the same rich contrast Awesomic relies on. Brand yellow
+   stays the primary accent throughout.
+   ========================================================================== */
+
+/* 1) Re-skin the global design tokens — cascades through every var(--dd-*). */
+:root{
+  --dd-bg:        #FBF6EE;            /* warm cream page */
+  --dd-bg-2:      #F4EEE3;            /* slightly deeper cream section */
+  --dd-surface:   #FFFFFF;            /* white cards */
+  --dd-surface-2: #FAF5EC;            /* off-white card variant */
+  --dd-line:      rgba(20,20,20,.08); /* hairline divider on light bg */
+  --dd-line-2:    rgba(20,20,20,.14);
+  --dd-text:      #1A1A1A;
+  --dd-muted:     #6B6B72;
+  --dd-faint:     #9B9BA0;
+  --dd-neon-dim:  #C99A1A;            /* darker mustard for yellow on cream */
+  --dd-red:       #E85A6A;
+}
+
+/* 2) Scoped dark-zone tokens — the IDE, pricing card and final CTA stay dark.
+      Because custom properties cascade, every var(--dd-*) inside these blocks
+      automatically resolves to a dark-theme-friendly value with no per-rule
+      overrides needed. */
+.dd-ide,
+.dd-price-card,
+.dd-final-box{
+  --dd-line:   rgba(255,255,255,.08);
+  --dd-line-2: rgba(255,255,255,.14);
+  --dd-text:   #F4F5F7;
+  --dd-muted:  #9A9CA8;
+  --dd-faint:  #62646F;
+  color: var(--dd-text);
+}
+
+/* 3) Drop the dark-theme film grain — light pages read cleaner without it. */
+body::after{ display:none; }
+
+/* 4) Sticky header on scroll — warm cream blur, not near-black. */
+.dd-header.is-scrolled{ background:rgba(251,246,238,.82); }
+
+/* 5) Eyebrow pill text — yellow text vanishes on cream; mustard reads cleanly. */
+.dd-eyebrow{ color:var(--dd-neon-dim); }
+
+/* 6) Hero accent "Speed of AI." — swap yellow text for a classic highlighter
+      marker stroke behind dark text. Very Awesomic / Notion / Linear. */
+.dd-hero h1 em{
+  font-style:normal; color:#1A1A1A;
+  background:linear-gradient(180deg, transparent 62%, var(--dd-neon) 62%);
+  padding:0 .12em; border-radius:.06em;
+}
+
+/* 7) Gradient heading — shift the brand gradient to readable warm tones. */
+.dd-grad{ background:linear-gradient(100deg, var(--dd-neon-dim), #2D8CAD); -webkit-background-clip:text; background-clip:text; color:transparent; }
+
+/* 8) Trust marquee wordmarks — soft gray on cream, dark on hover. */
+.dd-trust-track span{ color:#A2A2AA; }
+.dd-trust-track span:hover{ color:#1A1A1A; }
+
+/* 9) Comparison — Traditional column is now a soft white card with red signal. */
+.dd-vs-col.trad{ background:var(--dd-surface); border:1px solid var(--dd-line); }
+.dd-vs-col.trad .dd-vs-tag{ color:var(--dd-red); background:rgba(232,90,106,.07); border-color:rgba(232,90,106,.3); }
+.dd-vs-col.trad .dd-vs-price b{ color:#1A1A1A; }
+
+/* 10) Comparison — Duck.design column gets a stronger yellow tint so the
+       contrast against cream still pops the way the dark theme did. */
+.dd-vs-col.duck{
+  background:linear-gradient(180deg, rgba(255,202,65,.22), rgba(255,202,65,.08));
+  border:1px solid rgba(255,202,65,.55);
+  box-shadow:0 30px 90px -40px rgba(255,202,65,.45);
+}
+.dd-vs-col.duck .dd-vs-tag{ color:var(--dd-neon-dim); background:rgba(255,202,65,.2); border-color:rgba(255,202,65,.55); }
+.dd-vs-col.duck .dd-vs-price b{ color:#1A1A1A; }
+.dd-vs-col.duck li::before{ color:var(--dd-neon-dim); }
+
+/* 11) Step / capability icon strokes — darker mustard to read on light tint. */
+.dd-step-ico{ color:var(--dd-neon-dim); }
+
+/* 12) Soft pillow-shadow on hover so white-on-cream cards feel like they lift. */
+.dd-step:hover, .dd-cell:hover, .dd-tcard:hover{
+  box-shadow:0 22px 50px -22px rgba(20,20,20,.18);
+}
+
+/* ============================================================================
+   20. AI BACKGROUND IMAGES (Awesomic / Superside style)
+   ----------------------------------------------------------------------------
+   Three swappable background slots. Right now each one uses a layered gradient
+   that approximates the AI image we generated, so the page already looks
+   finished. To plug in the real Higgsfield images:
+
+     1. Right-click each Higgsfield widget in chat → "Save image as..."
+     2. Upload the three files to your WordPress media library (or any CDN).
+     3. Replace the three variable values below — keep the colored overlay so
+        the text stays readable on top of the image.
+
+     --bg-hero:  linear-gradient(rgba(251,246,238,.55),rgba(251,246,238,.75)),
+                 url('https://YOUR-SITE/wp-content/uploads/hero-bg.jpg') center/cover no-repeat;
+
+     --bg-cta:   linear-gradient(rgba(10,10,16,.45),rgba(10,10,16,.7)),
+                 url('https://YOUR-SITE/wp-content/uploads/cta-bg.jpg') center/cover no-repeat;
+
+     --bg-trust: linear-gradient(rgba(251,246,238,.82),rgba(251,246,238,.94)),
+                 url('https://YOUR-SITE/wp-content/uploads/trust-bg.jpg') center/cover no-repeat;
+   ========================================================================== */
+:root{
+  /* Hero — real Higgsfield AI image (warm cream-honey atmospheric texture) + cream overlay for readability */
+  --bg-hero:
+    linear-gradient(rgba(251,246,238,.55), rgba(251,246,238,.75)),
+    url('assets/hero-bg.png') center/cover no-repeat;
+
+  /* Final CTA — real Higgsfield AI image (dark dunes with liquid-gold streams) + dark overlay */
+  --bg-cta:
+    linear-gradient(rgba(10,10,16,.45), rgba(10,10,16,.7)),
+    url('assets/cta-bg.png') center/cover no-repeat;
+
+  /* Wall of Trust — real Higgsfield AI image (soft warm watercolor wash) + strong cream overlay */
+  --bg-trust:
+    linear-gradient(rgba(251,246,238,.82), rgba(251,246,238,.94)),
+    url('assets/trust-bg.png') center/cover no-repeat;
+}
+
+.dd-hero{ background: var(--bg-hero); }
+.dd-final-box{ background: var(--bg-cta); }
+.dd-love{ background: var(--bg-trust); }
+
+</style>
+</head>
+<body>
+
+<!-- ========================= HEADER ========================= -->
+<header class="dd-header" id="ddHeader">
+  <div class="dd-wrap dd-nav">
+    <a href="#" class="dd-logo" aria-label="Duck.design home">
+      <!-- Duck.design wordmark: black fills swapped to currentColor for the dark theme; duck belly keeps brand yellow -->
+      <svg class="dd-logo-svg" viewBox="0 0 174 35" fill="none" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Duck.design">
+        <path fill-rule="evenodd" clip-rule="evenodd" d="M0 8.80675C4.49068 9.07669 5.7062 7.72699 7.25936 4.99387C7.76583 6.6135 10.9397 7.2546 11.4462 8.87423C7.32689 11.6748 1.68822 10.2914 0 8.80675Z" fill="currentColor"/>
+        <path d="M8.54242 9.85276C11.265 9.85276 13.472 7.64715 13.472 4.92638C13.472 2.20562 11.265 0 8.54242 0C5.81986 0 3.6128 2.20562 3.6128 4.92638C3.6128 7.64715 5.81986 9.85276 8.54242 9.85276Z" fill="currentColor"/>
+        <path fill-rule="evenodd" clip-rule="evenodd" d="M39.8759 12.1472H43.8263V28.0736H40.4161L40.1122 25.7117C39.2681 27.2975 37.9175 28.0736 35.9929 28.0736C34.3722 28.0736 33.123 27.5675 32.2789 26.5215C31.401 25.5092 30.9958 24.0583 30.9958 22.2699V12.1472H34.98V21.3589C34.98 21.7301 34.98 22.0675 35.0813 22.4387C35.3177 23.6196 36.0267 24.1933 37.2085 24.1933C37.2422 24.1933 37.3098 24.1933 37.3435 24.1933C37.3773 24.1933 37.4111 24.1933 37.4448 24.1933C38.559 24.1933 39.4707 23.4509 39.7746 22.4387C39.9434 21.8988 39.8759 21.089 39.8759 20.4816V12.1472Z" fill="currentColor"/>
+        <path fill-rule="evenodd" clip-rule="evenodd" d="M53.8881 12.1472C55.8465 12.1472 57.4334 12.6534 58.7164 13.6656C59.9995 14.6442 60.8098 16.0613 61.08 17.8834H57.197C56.9607 17.2086 56.5893 16.6687 56.0153 16.2975C55.4413 15.9264 54.766 15.7239 53.9894 15.7239C52.8752 15.7239 51.9635 16.1288 51.2883 16.9724C50.5792 17.7822 50.2078 18.862 50.2078 20.1442C50.2078 21.3926 50.5454 22.4387 51.2883 23.2822C52.0311 24.092 52.9765 24.5307 54.0907 24.5307C54.8673 24.5307 55.5426 24.3282 56.1166 23.9233C56.6906 23.5184 57.062 23.0123 57.2646 22.4049H61.1813C60.8098 24.227 59.9995 25.6442 58.6827 26.6564C57.3996 27.635 55.8127 28.1411 53.9219 28.1411C51.5921 28.1411 49.7351 27.3988 48.2832 25.9479C46.8313 24.4632 46.0885 22.5399 46.0885 20.2117C46.0885 17.9172 46.8313 16.0276 48.2832 14.4755C49.7351 12.8896 51.5921 12.1135 53.8881 12.1472Z" fill="currentColor"/>
+        <path fill-rule="evenodd" clip-rule="evenodd" d="M63.2746 5.29755H67.2589V18.6258L71.8171 12.1472H76.5779L71.9859 18.8957L77.3882 28.0399H72.83L69.2172 22L67.2589 24.4969V28.0399H63.2746V5.29755Z" fill="currentColor"/>
+        <path fill-rule="evenodd" clip-rule="evenodd" d="M82.858 23.2485C83.5333 23.2485 84.1073 23.4847 84.58 23.9571C85.0527 24.3957 85.3229 24.9693 85.3229 25.6442C85.3229 26.319 85.0865 26.8926 84.58 27.365C84.1073 27.8374 83.5333 28.0736 82.858 28.0736C82.149 28.0736 81.575 27.8374 81.1023 27.3988C80.6296 26.9264 80.3932 26.3528 80.3932 25.6442C80.3932 24.9356 80.6296 24.362 81.1023 23.9233C81.575 23.4847 82.149 23.2485 82.858 23.2485ZM168.383 12.1472C170.004 12.1472 171.253 12.6534 172.098 13.6994C172.975 14.7117 173.414 16.1626 173.414 17.9509V28.0736H169.396V18.8282C169.396 16.9724 168.654 16.0276 167.202 16.0276C166.358 16.0276 165.682 16.365 165.176 17.0399C164.703 17.7147 164.433 18.6258 164.433 19.8405V28.0736H160.483V12.1472H163.893L164.197 14.5092C165.007 12.9233 166.425 12.1472 168.383 12.1472ZM152.345 12.1472C154.27 12.5184 156.262 12.4509 158.254 12.1472C158.22 14.0031 157.444 15.1166 155.958 15.5215C156.161 16.1288 156.262 16.7025 156.262 17.3436C156.262 18.9294 155.688 20.2117 154.54 21.2577C153.426 22.2699 151.94 22.7761 150.117 22.7761C149.104 22.7761 148.26 22.6411 147.517 22.3712C147.281 22.6748 147.146 23.046 147.146 23.5184C147.146 24.3957 147.686 24.8006 148.699 24.8006H152.345C153.966 24.8006 155.215 25.2055 156.093 25.9816C157.005 26.7239 157.444 27.8374 157.444 29.2883C157.444 30.9755 156.836 32.3252 155.587 33.2362C154.371 34.2147 152.683 34.6871 150.556 34.6871C148.226 34.6871 146.47 34.2822 145.289 33.4386C144.107 32.6288 143.499 31.4478 143.499 29.8957C143.499 28.7485 144.039 27.8374 145.052 27.1626C143.837 26.319 143.229 25.2055 143.229 23.8221C143.229 22.5061 143.769 21.4264 144.816 20.5153C144.107 19.5706 143.735 18.5245 143.735 17.3436C143.735 15.7239 144.343 14.3742 145.525 13.3957C146.707 12.3497 148.226 11.8436 150.049 11.8436C150.86 11.8098 151.603 11.911 152.345 12.1472ZM151.366 27.8037H149.036C148.564 27.8712 148.159 28.0399 147.855 28.3436C147.551 28.681 147.416 29.0859 147.416 29.5583C147.416 30.2331 147.686 30.7393 148.26 31.1104C148.834 31.4816 149.61 31.6503 150.623 31.6503C152.582 31.6503 153.561 30.908 153.561 29.4571C153.561 28.3773 152.852 27.8037 151.366 27.8037ZM147.72 17.3436C147.72 18.0521 147.922 18.6595 148.361 19.1319C148.8 19.5706 149.34 19.8067 150.049 19.8067C150.758 19.8067 151.299 19.5706 151.704 19.1319C152.143 18.6595 152.345 18.0859 152.345 17.3436C152.345 16.6012 152.143 15.9939 151.704 15.5215C151.299 15.0491 150.725 14.8129 150.049 14.8129C149.34 14.8129 148.8 15.0491 148.361 15.5215C147.956 15.9601 147.72 16.5675 147.72 17.3436ZM137.084 12.1472H141.068V28.0736H137.084V12.1472ZM139.076 5.19632C139.717 5.19632 140.291 5.43251 140.764 5.90491C141.237 6.34356 141.507 6.91718 141.507 7.55828C141.507 8.23313 141.271 8.80675 140.798 9.2454C140.325 9.68405 139.751 9.92025 139.076 9.92025C138.401 9.92025 137.827 9.68405 137.354 9.2454C136.881 8.80675 136.645 8.23313 136.645 7.55828C136.645 6.88344 136.881 6.34356 137.354 5.90491C137.827 5.43251 138.401 5.19632 139.076 5.19632ZM128.845 12.1472C130.466 12.1472 131.817 12.5859 132.863 13.4632C133.91 14.3405 134.484 15.5215 134.551 16.9387H130.601C130.567 15.7577 129.993 15.184 128.812 15.184C128.271 15.184 127.832 15.319 127.528 15.589C127.225 15.8589 127.09 16.1963 127.09 16.6687C127.09 17.1411 127.292 17.5123 127.664 17.7822C128.069 18.0184 128.778 18.2209 129.824 18.4233C131.648 18.727 132.931 19.2331 133.707 19.9755C134.518 20.7178 134.889 21.7301 134.889 23.046C134.889 24.6319 134.349 25.8466 133.235 26.7239C132.12 27.6012 130.669 28.0061 128.879 28.0061C127.022 28.0061 125.536 27.5675 124.456 26.6902C123.409 25.8129 122.835 24.5982 122.801 23.046H126.752C126.786 24.2945 127.528 24.9018 128.98 24.9018C130.263 24.9018 130.905 24.4294 130.905 23.4509C130.905 22.9448 130.702 22.5736 130.297 22.2699C129.892 22 129.183 21.7638 128.102 21.5613C126.414 21.2914 125.131 20.7515 124.321 20.0429C123.51 19.3006 123.139 18.3221 123.139 17.0736C123.139 15.6564 123.646 14.4755 124.658 13.5644C125.638 12.6534 127.056 12.1472 128.845 12.1472ZM113.381 12.1472C115.576 12.1472 117.332 12.8221 118.648 14.2393C119.965 15.6227 120.607 17.546 120.607 20.1104V21.3252H109.768C109.836 22.3374 110.207 23.181 110.883 23.8221C111.558 24.4294 112.436 24.7669 113.516 24.7669C115.137 24.7669 116.184 24.1595 116.656 22.9785H120.539C119.526 26.3865 117.129 28.1074 113.415 28.1074C111.085 28.1074 109.228 27.365 107.776 25.9479C106.358 24.4969 105.649 22.5736 105.649 20.1779C105.649 17.8497 106.358 15.9264 107.81 14.4417C109.228 12.8896 111.119 12.1472 113.381 12.1472ZM109.768 18.592H116.555C116.521 17.6135 116.217 16.8712 115.643 16.2638C115.069 15.6564 114.259 15.3865 113.28 15.3865C112.301 15.3865 111.524 15.6902 110.883 16.2638C110.241 16.8712 109.87 17.6472 109.768 18.592ZM103.421 5.80368V28.0736H99.9766L99.6728 25.7117C98.5585 27.2975 96.9041 28.0736 94.7094 28.0736C92.6498 28.0736 90.9278 27.2975 89.5434 25.7791C88.1591 24.2607 87.4838 22.3712 87.4838 20.1104C87.4838 17.8497 88.1591 15.9939 89.5434 14.4417C90.9278 12.9233 92.6497 12.1472 94.7431 12.1472C96.8365 12.1472 98.3897 12.8221 99.4026 14.138V5.80368H103.421ZM95.5535 15.8252C94.4393 15.8252 93.4939 16.2301 92.7173 17.0399C91.9745 17.8497 91.6031 18.862 91.6031 20.1104C91.6031 21.3589 91.9745 22.4049 92.7173 23.2147C93.4601 24.0245 94.4055 24.4294 95.5535 24.4294C96.634 24.4294 97.5794 24.0583 98.3222 23.3159C99.0988 22.5399 99.5039 21.5276 99.5039 20.2117V20.0429C99.4702 18.7945 99.0988 17.7822 98.3222 17.0061C97.5118 16.2301 96.6002 15.8589 95.5535 15.8252Z" fill="currentColor"/>
+        <path fill-rule="evenodd" clip-rule="evenodd" d="M28.7336 12.1472V16.0951C28.7336 22.6748 23.3313 28.0736 16.7472 28.0736C10.1631 28.0736 4.76079 22.6748 4.76079 16.0951V12.1472H28.7336Z" fill="currentColor"/>
+        <path fill-rule="evenodd" clip-rule="evenodd" d="M8.77877 16.1626C8.77877 17.1748 9.01512 18.1871 9.38653 19.0982C9.7917 20.0767 10.3995 20.954 11.1085 21.6963C11.8513 22.4386 12.7292 23.0123 13.7084 23.4172C14.6538 23.8221 15.6667 24.0245 16.7472 24.0245C17.7939 24.0245 18.8406 23.7883 19.786 23.4172C20.7652 23.0123 21.643 22.4049 22.3859 21.6963C23.1287 20.954 23.7027 20.0767 24.1079 19.0982C24.4793 18.1871 24.7156 17.2086 24.7156 16.1626V10.9325L8.77877 16.1626Z" fill="#FFCA41"/>
+      </svg>
+    </a>
+    <nav class="dd-nav-links">
+      <a href="#how">How it works</a>
+      <a href="#vs">AI vs Traditional</a>
+      <a href="#capabilities">Capabilities</a>
+      <a href="#trust">Trust</a>
+      <a href="#pricing">Pricing</a>
+      <a href="#faq">FAQ</a>
+    </nav>
+    <a href="#final" class="dd-btn dd-btn--primary">Book a Demo</a>
+    <button class="dd-burger" aria-label="Menu"><span></span><span></span><span></span></button>
+  </div>
+</header>
+
+<!-- ========================= BLOCK 1 — HERO ========================= -->
+<section class="dd-hero">
+  <span class="dd-glow g1"></span><span class="dd-glow g2"></span>
+  <div class="dd-wrap dd-hero-grid">
+    <!-- Left: typographic value proposition -->
+    <div class="dd-hero-copy">
+      <span class="dd-eyebrow dd-reveal">AI Coding · Vibe Coding</span>
+      <h1 class="dd-reveal" data-delay="1">Web Development at the <em>Speed of AI.</em> Controlled by Senior Designers.</h1>
+      <p class="dd-hero-sub dd-reveal" data-delay="2">Build, deploy and scale production-ready websites and web apps <b style="color:var(--dd-text)">4&times; faster</b> than traditional dev cycles. Powered by AI Coding, engineered by Duck.design&rsquo;s Senior Product Leads.</p>
+      <div class="dd-hero-cta dd-reveal" data-delay="3">
+        <a href="#final" class="dd-btn dd-btn--primary">Book a Demo Call
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path d="M5 12h14M13 6l6 6-6 6"/></svg></a>
+        <a href="#vs" class="dd-btn dd-btn--ghost">See the economics</a>
+      </div>
+      <p class="dd-hero-micro dd-reveal" data-delay="4">Launch your project this week and save thousands in traditional dev overhead.</p>
+    </div>
+
+    <!-- Right: auto-generating IDE -> live website preview -->
+    <div class="dd-ide dd-reveal" data-delay="2">
+      <div class="dd-ide-bar">
+        <div class="dd-dots"><i></i><i></i><i></i></div>
+        <div class="dd-ide-file"><span class="on">landing.jsx</span> &nbsp;·&nbsp; vibe-coding</div>
+      </div>
+      <div class="dd-ide-body">
+        <div class="dd-code" id="ddCode"><!-- lines injected by JS --></div>
+        <div class="dd-prev" id="ddPrev">
+          <div class="dd-hand">
+            <svg viewBox="0 0 24 24" fill="#fff"><path d="M5.5 2.5a1.5 1.5 0 0 1 3 0v6.2l.7-.1V7a1.4 1.4 0 0 1 2.8 0v1.5l.7.1V7.5a1.3 1.3 0 0 1 2.6 0v2l.6.2V9a1.2 1.2 0 0 1 2.4 0v5.5c0 3-2.2 5.5-5.6 5.5-2.4 0-3.8-.9-5-2.6L3 14.2c-.7-1-.3-2.1.7-2.5.6-.2 1.2 0 1.8.6V2.5z"/></svg>
+          </div>
+          <div class="dd-prev-nav dd-prev-el" data-step="0"><b>YourBrand</b><span class="dot"></span></div>
+          <h4 class="dd-prev-el" data-step="1">Ship products <u>faster.</u></h4>
+          <p class="dd-prev-el" data-step="2">Production-ready in days, not months.</p>
+          <span class="pbtn dd-prev-el" data-step="3">Get started</span>
+          <div class="dd-prev-cards">
+            <div class="dd-prev-el" data-step="4"></div>
+            <div class="dd-prev-el" data-step="4"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ========================= TRUST BAR (client marquee) ========================= -->
+<section class="dd-trust">
+  <div class="dd-wrap">
+    <p>Trusted by world-class brands</p>
+  </div>
+  <!-- Wordmarks are text; in production swap each <span> for the brand's official SVG logo -->
+  <div class="dd-trust-marquee">
+    <div class="dd-trust-track">
+      <span>Amazon</span>
+      <span>Virgin Media</span>
+      <span>Semmtech</span>
+      <span>Paltalk</span>
+      <span>Lebara</span>
+      <span>HSBC</span>
+      <!-- duplicate set for seamless loop -->
+      <span aria-hidden="true">Amazon</span>
+      <span aria-hidden="true">Virgin Media</span>
+      <span aria-hidden="true">Semmtech</span>
+      <span aria-hidden="true">Paltalk</span>
+      <span aria-hidden="true">Lebara</span>
+      <span aria-hidden="true">HSBC</span>
+    </div>
+  </div>
+</section>
+
+<!-- ========================= BLOCK 2 — HOW IT WORKS ========================= -->
+<section class="dd-how" id="how">
+  <div class="dd-wrap">
+    <div class="dd-section-head dd-reveal">
+      <span class="dd-eyebrow">The Workflow</span>
+      <h2 class="dd-h2" style="margin-top:18px">The AI-Driven Development Workflow</h2>
+      <p>Senior design judgement at every step — AI handles the velocity, humans own the quality.</p>
+    </div>
+    <div class="dd-steps">
+
+      <div class="dd-step dd-reveal" data-delay="1">
+        <span class="dd-step-conn"></span>
+        <div class="dd-step-ico">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M3 3h7v7H3zM14 3h7v7h-7zM3 14h7v7H3zM14 14h7v7h-7z"/></svg>
+        </div>
+        <div class="num"></div>
+        <h3>Architectural Strategy &amp; UX</h3>
+        <p>Our Senior UX/UI designers draft the perfect structural layout and user journeys, tailored precisely to your business goals.</p>
+      </div>
+
+      <div class="dd-step dd-reveal" data-delay="2">
+        <span class="dd-step-conn"></span>
+        <div class="dd-step-ico">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M8 8l-4 4 4 4M16 8l4 4-4 4M14 4l-4 16"/></svg>
+        </div>
+        <div class="num"></div>
+        <h3>AI-Native Generation</h3>
+        <p>Acting as engineers and architects, our design leads leverage advanced AI coding agents (Claude, ChatGPT, Bolt.new) to generate clean, semantic code in minutes, not months.</p>
+      </div>
+
+      <div class="dd-step dd-reveal" data-delay="3">
+        <div class="dd-step-ico">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M20 6L9 17l-5-5"/></svg>
+        </div>
+        <div class="num"></div>
+        <h3>Quality Control &amp; Deployment</h3>
+        <p>A human engineer reviews every file for responsive alignment, SEO and clean architecture before delivering a fully functional, live digital product.</p>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<!-- ========================= BLOCK 3 — UNIT ECONOMICS / VS ========================= -->
+<section class="dd-vs" id="vs">
+  <span class="dd-glow"></span>
+  <div class="dd-wrap">
+    <div class="dd-section-head dd-reveal">
+      <span class="dd-eyebrow">Unit Economics</span>
+      <h2 class="dd-h2" style="margin-top:18px">Why AI Coding <span class="dd-grad">Outperforms</span> Traditional Web Dev</h2>
+      <p>For 90% of business websites, traditional dev cycles are slow, bloated and obsolete. Here&rsquo;s the side-by-side.</p>
+    </div>
+
+    <div class="dd-vs-grid">
+      <!-- Traditional -->
+      <div class="dd-vs-col trad dd-reveal" data-delay="1">
+        <span class="dd-vs-tag">Traditional Web Dev</span>
+        <h3>Full agency team</h3>
+        <div class="dd-vs-price">Starting budget <b>$10,000+</b> per basic multi-page site</div>
+        <ul>
+          <li><span>Requires <b>PM + Frontend + Backend + QA</b> &mdash; a full headcount stack</span></li>
+          <li><span>Delivery timeline: <b>1&ndash;3 months</b></span></li>
+          <li><span>Every layout change means hours of manual coding</span></li>
+          <li><span>Locked behind engineering sprint backlogs</span></li>
+          <li><span>Fixed cost balloons with every revision round</span></li>
+        </ul>
+      </div>
+
+      <!-- Duck.design -->
+      <div class="dd-vs-col duck dd-reveal" data-delay="2">
+        <span class="dd-vs-badge">Effortless</span>
+        <span class="dd-vs-tag">AI Coding · Duck.design</span>
+        <h3>1 Senior Architect + Elite AI Stack</h3>
+        <div class="dd-vs-price">Included in your flat subscription <b>$1,999<small style="font-size:.95rem;color:var(--dd-muted)">/mo</small></b></div>
+        <ul>
+          <li><span>One <b>Senior Product Architect</b> directs the entire build</span></li>
+          <li><span>Delivery timeline: <b>3&ndash;7 days</b></span></li>
+          <li><span>Revisions executed <b>instantly</b> via AI agents, on the fly</span></li>
+          <li><span>No backlog &mdash; new features ship the same week</span></li>
+          <li><span>Predictable flat monthly cost, unlimited queue</span></li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ========================= BLOCK 4 — CAPABILITIES (BENTO) ========================= -->
+<section class="dd-cap" id="capabilities">
+  <div class="dd-wrap">
+    <div class="dd-section-head dd-reveal">
+      <span class="dd-eyebrow">The Engineering Edge</span>
+      <h2 class="dd-h2" style="margin-top:18px">Next-Gen Engineering Capabilities</h2>
+    </div>
+
+    <div class="dd-bento">
+      <!-- c1 -->
+      <div class="dd-cell c1 dd-reveal" data-delay="1">
+        <div class="dd-step-ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M12 2v4M12 18v4M4.9 4.9l2.8 2.8M16.3 16.3l2.8 2.8M2 12h4M18 12h4"/></svg></div>
+        <h3>Instant Variations</h3>
+        <p>Implementing a new section or visual asset takes a simple prompt change &mdash; not a week-long dev sprint.</p>
+        <div class="dd-chip"><span class="tk-com"># prompt</span><br>add <span class="tk-attr">pricing-toggle</span> &rarr; <span style="color:var(--dd-neon)">rendered in 8s</span></div>
+      </div>
+      <!-- c2 -->
+      <div class="dd-cell c2 dd-reveal" data-delay="2">
+        <div class="dd-step-ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M16 18l6-6-6-6M8 6l-6 6 6 6"/></svg></div>
+        <h3>Clean, Production-Ready Code</h3>
+        <p>Our AI stack generates semantic, lightweight code that follows modern global web standards out of the box.</p>
+        <div class="dd-chip"><span class="tk-com">&lt;!-- semantic, a11y-ready --&gt;</span><br><span style="color:var(--sx-tag)">&lt;section</span> <span class="tk-attr">aria-label</span>=<span class="tk-str">"hero"</span><span style="color:var(--sx-tag)">&gt;</span></div>
+      </div>
+      <!-- c3 -->
+      <div class="dd-cell c3 dd-reveal" data-delay="1">
+        <div class="dd-step-ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M12 2l3 6 6 .9-4.5 4.3 1 6.3L12 17l-5.5 2.5 1-6.3L3 8.9 9 8z"/></svg></div>
+        <h3>Seamless Automations</h3>
+        <p>Plug in AI agents, CRM webhooks, Stripe checkouts and custom databases &mdash; effortlessly.</p>
+      </div>
+      <!-- c4 -->
+      <div class="dd-cell c4 dd-reveal" data-delay="2">
+        <div class="dd-step-ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M3 3h18v14H3zM8 21h8M12 17v4"/></svg></div>
+        <h3>No Design-to-Dev Friction</h3>
+        <p>Code is directed straight by the designer &mdash; what you approve in Figma is exactly what renders live.</p>
+      </div>
+      <!-- c5 -->
+      <div class="dd-cell c5 dd-reveal" data-delay="3">
+        <div class="dd-step-ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M12 2a10 10 0 100 20 10 10 0 000-20zM2 12h20M12 2c3 3 3 17 0 20M12 2c-3 3-3 17 0 20"/></svg></div>
+        <h3>Infinite Customization</h3>
+        <p>Break free from the hard limits and rigid templates of Tilda, Webflow or Wix.</p>
+      </div>
+      <!-- c6 -->
+      <div class="dd-cell c6 dd-reveal" data-delay="2">
+        <div class="dd-step-ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M16 18l6-6-6-6M8 6l-6 6 6 6M14 3l-4 18"/></svg></div>
+        <div class="txt">
+          <h3>Zero Platform Lock-in</h3>
+          <p>Clean, fully exportable source code &mdash; easily maintained and ready to host anywhere, by any engineering team, forever.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ========================= BLOCK 5 — TECH STACK ========================= -->
+<section class="dd-stack">
+  <div class="dd-wrap">
+    <div class="dd-section-head dd-reveal" style="text-align:center">
+      <span class="dd-eyebrow">The AI Code Ecosystem</span>
+      <h2 class="dd-h2" style="margin-top:18px">Driven by the Industry&rsquo;s Best AI Tech Stack</h2>
+      <p style="margin-inline:auto">We pair professional design oversight with the world&rsquo;s most advanced AI programming models to ship code at terminal velocity.</p>
+    </div>
+  </div>
+  <!-- Rolling marquee (track duplicated for a seamless loop) -->
+  <div class="dd-marquee">
+    <div class="dd-marquee-track">
+      <div class="dd-badge"><i></i>Claude 3.5 Sonnet <small>Anthropic</small></div>
+      <div class="dd-badge"><i></i>ChatGPT <small>OpenAI</small></div>
+      <div class="dd-badge"><i></i>Lovable.dev <small>app builder</small></div>
+      <div class="dd-badge"><i></i>v0 <small>by Vercel</small></div>
+      <div class="dd-badge"><i></i>Bolt.new <small>StackBlitz</small></div>
+      <div class="dd-badge"><i></i>Cursor <small>AI IDE</small></div>
+      <!-- duplicate -->
+      <div class="dd-badge"><i></i>Claude 3.5 Sonnet <small>Anthropic</small></div>
+      <div class="dd-badge"><i></i>ChatGPT <small>OpenAI</small></div>
+      <div class="dd-badge"><i></i>Lovable.dev <small>app builder</small></div>
+      <div class="dd-badge"><i></i>v0 <small>by Vercel</small></div>
+      <div class="dd-badge"><i></i>Bolt.new <small>StackBlitz</small></div>
+      <div class="dd-badge"><i></i>Cursor <small>AI IDE</small></div>
+    </div>
+  </div>
+</section>
+
+<!-- ========================= WALL OF LOVE ========================= -->
+<section class="dd-love" id="trust">
+  <span class="dd-glow"></span>
+  <div class="dd-wrap">
+
+    <div class="dd-love-head dd-reveal">
+      <span class="dd-eyebrow">Trust</span>
+      <h2 class="dd-h2">Trusted by founders,<br>marketers and builders.</h2>
+      <p>Real, verified reviews — 4.9/5 across 54 client reviews on Clutch.</p>
+    </div>
+
+    <!-- Trust-rating pills -->
+    <div class="dd-love-stats dd-reveal" data-delay="1">
+      <!-- Real Clutch data from https://clutch.co/profile/duckdesign -->
+      <div class="dd-love-stat"><span class="src">Clutch rating</span><span class="score">4.9</span><span class="stars">★★★★★</span></div>
+      <div class="dd-love-stat"><span class="src">Verified reviews</span><span class="score">54</span></div>
+      <div class="dd-love-stat">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#BFFF3C" stroke-width="2.5" style="stroke:var(--dd-neon)"><path d="M5 13l4 4L19 7"/></svg>
+        <span class="src">Premier Verified · Clutch</span>
+      </div>
+    </div>
+
+    <!-- Three vertically-scrolling columns: col 1 up, col 2 down, col 3 up-slow.
+         Each column duplicates its 4 cards so the translateY(-50%) loop is seamless. -->
+    <div class="dd-love-wall dd-reveal" data-delay="2">
+      <div class="dd-love-cols">
+
+        <!-- ===== Column 1 — scroll up, default speed ===== -->
+        <div class="dd-love-col">
+          <div class="dd-love-track">
+
+            <article class="dd-tcard">
+              <div class="dd-tcard-top">
+                <div class="dd-avatar" style="background:#6E56CF">MB</div>
+                <div><div class="name">Marc Beckett</div><div class="role">CMO · Northwind</div></div>
+              </div>
+              <p class="quote">Duck.design replaced our entire dev team. Same output, a tenth of the cost. The Vibe Coding workflow shipped our SaaS landing in 4 days.</p>
+              <div class="tfooter"><span class="src">via Trustpilot</span><span class="stars">★★★★★</span></div>
+            </article>
+
+            <article class="dd-tcard">
+              <div class="dd-tcard-top">
+                <div class="dd-avatar" style="background:#E25C5C">RA</div>
+                <div><div class="name">Founder &amp; CEO</div><div class="role">Rocket Alumni Solutions · Boston</div></div>
+              </div>
+              <p class="quote">They produce high-quality work and are incredibly responsive.</p>
+              <div class="tfooter"><span class="src">via Clutch</span><span class="stars">★★★★★</span></div>
+            </article>
+
+            <article class="dd-tcard">
+              <div class="dd-tcard-top">
+                <div class="dd-avatar" style="background:#C7853E">CR</div>
+                <div><div class="name">Carlos Ruiz</div><div class="role">Co-founder · Loomis</div></div>
+              </div>
+              <p class="quote">The fact a senior designer drives the AI agents is the unlock. No more lost-in-translation Figma handoffs.</p>
+              <div class="tfooter"><span class="src">via LinkedIn</span><span class="stars">★★★★★</span></div>
+            </article>
+
+            <article class="dd-tcard">
+              <div class="dd-tcard-top">
+                <div class="dd-avatar" style="background:#9E5C8C">DR</div>
+                <div><div class="name">Diana Radkevich</div><div class="role">BizDev · 3Alica</div></div>
+              </div>
+              <p class="quote">They combine strong design thinking with an efficient delivery process.</p>
+              <div class="tfooter"><span class="src">via Clutch</span><span class="stars">★★★★★</span></div>
+            </article>
+
+            <!-- duplicate for seamless loop -->
+            <article class="dd-tcard">
+              <div class="dd-tcard-top">
+                <div class="dd-avatar" style="background:#6E56CF">MB</div>
+                <div><div class="name">Marc Beckett</div><div class="role">CMO · Northwind</div></div>
+              </div>
+              <p class="quote">Duck.design replaced our entire dev team. Same output, a tenth of the cost. The Vibe Coding workflow shipped our SaaS landing in 4 days.</p>
+              <div class="tfooter"><span class="src">via Trustpilot</span><span class="stars">★★★★★</span></div>
+            </article>
+
+            <article class="dd-tcard">
+              <div class="dd-tcard-top">
+                <div class="dd-avatar" style="background:#E25C5C">RA</div>
+                <div><div class="name">Founder &amp; CEO</div><div class="role">Rocket Alumni Solutions · Boston</div></div>
+              </div>
+              <p class="quote">They produce high-quality work and are incredibly responsive.</p>
+              <div class="tfooter"><span class="src">via Clutch</span><span class="stars">★★★★★</span></div>
+            </article>
+
+            <article class="dd-tcard">
+              <div class="dd-tcard-top">
+                <div class="dd-avatar" style="background:#C7853E">CR</div>
+                <div><div class="name">Carlos Ruiz</div><div class="role">Co-founder · Loomis</div></div>
+              </div>
+              <p class="quote">The fact a senior designer drives the AI agents is the unlock. No more lost-in-translation Figma handoffs.</p>
+              <div class="tfooter"><span class="src">via LinkedIn</span><span class="stars">★★★★★</span></div>
+            </article>
+
+            <article class="dd-tcard">
+              <div class="dd-tcard-top">
+                <div class="dd-avatar" style="background:#9E5C8C">DR</div>
+                <div><div class="name">Diana Radkevich</div><div class="role">BizDev · 3Alica</div></div>
+              </div>
+              <p class="quote">They combine strong design thinking with an efficient delivery process.</p>
+              <div class="tfooter"><span class="src">via Clutch</span><span class="stars">★★★★★</span></div>
+            </article>
+
+          </div>
+        </div>
+
+        <!-- ===== Column 2 — scroll down ===== -->
+        <div class="dd-love-col rev">
+          <div class="dd-love-track">
+
+            <article class="dd-tcard hi">
+              <div class="dd-tcard-top">
+                <div class="dd-avatar" style="background:#0A0A06">IR</div>
+                <div><div class="name">Ian Resler</div><div class="role">Founder's Associate · bont sos.</div></div>
+              </div>
+              <p class="quote">We are very happy with Duck.Design.</p>
+              <div class="tfooter"><span class="src">via Clutch</span><span class="stars">★★★★★</span></div>
+            </article>
+
+            <article class="dd-tcard">
+              <div class="dd-tcard-top">
+                <div class="dd-avatar" style="background:#7B8F3A">PM</div>
+                <div><div class="name">Priya Menon</div><div class="role">COO · Mintly</div></div>
+              </div>
+              <p class="quote">What used to be a 3-month engineering project is now a 5-day sprint. Quality didn't drop a notch.</p>
+              <div class="tfooter"><span class="src">via G2</span><span class="stars">★★★★★</span></div>
+            </article>
+
+            <article class="dd-tcard">
+              <div class="dd-tcard-top">
+                <div class="dd-avatar" style="background:#5C7AE0">IS</div>
+                <div><div class="name">Executive</div><div class="role">IntexSoft · Poland</div></div>
+              </div>
+              <p class="quote">Our new website led to a 40% increase in inquiries from potential clients.</p>
+              <div class="tfooter"><span class="src">via Clutch</span><span class="stars">★★★★★</span></div>
+            </article>
+
+            <article class="dd-tcard">
+              <div class="dd-tcard-top">
+                <div class="dd-avatar" style="background:#4F6BD6">HL</div>
+                <div><div class="name">Henrik Larsen</div><div class="role">CEO · Northcap</div></div>
+              </div>
+              <p class="quote">Onboarded Friday, fully deployed marketing site by Tuesday. AI dev myth — cracked.</p>
+              <div class="tfooter"><span class="src">via Trustpilot</span><span class="stars">★★★★★</span></div>
+            </article>
+
+            <!-- duplicate for seamless loop -->
+            <article class="dd-tcard hi">
+              <div class="dd-tcard-top">
+                <div class="dd-avatar" style="background:#0A0A06">IR</div>
+                <div><div class="name">Ian Resler</div><div class="role">Founder's Associate · bont sos.</div></div>
+              </div>
+              <p class="quote">We are very happy with Duck.Design.</p>
+              <div class="tfooter"><span class="src">via Clutch</span><span class="stars">★★★★★</span></div>
+            </article>
+
+            <article class="dd-tcard">
+              <div class="dd-tcard-top">
+                <div class="dd-avatar" style="background:#7B8F3A">PM</div>
+                <div><div class="name">Priya Menon</div><div class="role">COO · Mintly</div></div>
+              </div>
+              <p class="quote">What used to be a 3-month engineering project is now a 5-day sprint. Quality didn't drop a notch.</p>
+              <div class="tfooter"><span class="src">via G2</span><span class="stars">★★★★★</span></div>
+            </article>
+
+            <article class="dd-tcard">
+              <div class="dd-tcard-top">
+                <div class="dd-avatar" style="background:#5C7AE0">IS</div>
+                <div><div class="name">Executive</div><div class="role">IntexSoft · Poland</div></div>
+              </div>
+              <p class="quote">Our new website led to a 40% increase in inquiries from potential clients.</p>
+              <div class="tfooter"><span class="src">via Clutch</span><span class="stars">★★★★★</span></div>
+            </article>
+
+            <article class="dd-tcard">
+              <div class="dd-tcard-top">
+                <div class="dd-avatar" style="background:#4F6BD6">HL</div>
+                <div><div class="name">Henrik Larsen</div><div class="role">CEO · Northcap</div></div>
+              </div>
+              <p class="quote">Onboarded Friday, fully deployed marketing site by Tuesday. AI dev myth — cracked.</p>
+              <div class="tfooter"><span class="src">via Trustpilot</span><span class="stars">★★★★★</span></div>
+            </article>
+
+          </div>
+        </div>
+
+        <!-- ===== Column 3 — scroll up, slow ===== -->
+        <div class="dd-love-col slow">
+          <div class="dd-love-track">
+
+            <article class="dd-tcard">
+              <div class="dd-tcard-top">
+                <div class="dd-avatar" style="background:#2E8F8F">TR</div>
+                <div><div class="name">Tom Reyes</div><div class="role">Head of Growth · Pulse</div></div>
+              </div>
+              <p class="quote">Our conversion jumped 38% after the rebuild. Best decision of Q4 — no question.</p>
+              <div class="tfooter"><span class="src">via LinkedIn</span><span class="stars">★★★★★</span></div>
+            </article>
+
+            <article class="dd-tcard hi">
+              <div class="dd-tcard-top">
+                <div class="dd-avatar" style="background:#0A0A06">LR</div>
+                <div><div class="name">Lubov Razumova</div><div class="role">Account Manager · Aterise</div></div>
+              </div>
+              <p class="quote">They were receptive to feedback, making necessary revisions quickly.</p>
+              <div class="tfooter"><span class="src">via Clutch</span><span class="stars">★★★★★</span></div>
+            </article>
+
+            <article class="dd-tcard">
+              <div class="dd-tcard-top">
+                <div class="dd-avatar" style="background:#883C5A">DC</div>
+                <div><div class="name">David Chen</div><div class="role">VP Marketing · Inflect</div></div>
+              </div>
+              <p class="quote">Unit economics finally make sense. We replaced a $24k/mo agency retainer with one Duck.design seat.</p>
+              <div class="tfooter"><span class="src">via G2</span><span class="stars">★★★★★</span></div>
+            </article>
+
+            <article class="dd-tcard">
+              <div class="dd-tcard-top">
+                <div class="dd-avatar" style="background:#C2554A">NA</div>
+                <div><div class="name">Nora Adebayo</div><div class="role">Head of Design · Mercer</div></div>
+              </div>
+              <p class="quote">The pricing model is a cheat code for early-stage companies. Don't sleep on it.</p>
+              <div class="tfooter"><span class="src">via LinkedIn</span><span class="stars">★★★★★</span></div>
+            </article>
+
+            <!-- duplicate for seamless loop -->
+            <article class="dd-tcard">
+              <div class="dd-tcard-top">
+                <div class="dd-avatar" style="background:#2E8F8F">TR</div>
+                <div><div class="name">Tom Reyes</div><div class="role">Head of Growth · Pulse</div></div>
+              </div>
+              <p class="quote">Our conversion jumped 38% after the rebuild. Best decision of Q4 — no question.</p>
+              <div class="tfooter"><span class="src">via LinkedIn</span><span class="stars">★★★★★</span></div>
+            </article>
+
+            <article class="dd-tcard hi">
+              <div class="dd-tcard-top">
+                <div class="dd-avatar" style="background:#0A0A06">LR</div>
+                <div><div class="name">Lubov Razumova</div><div class="role">Account Manager · Aterise</div></div>
+              </div>
+              <p class="quote">They were receptive to feedback, making necessary revisions quickly.</p>
+              <div class="tfooter"><span class="src">via Clutch</span><span class="stars">★★★★★</span></div>
+            </article>
+
+            <article class="dd-tcard">
+              <div class="dd-tcard-top">
+                <div class="dd-avatar" style="background:#883C5A">DC</div>
+                <div><div class="name">David Chen</div><div class="role">VP Marketing · Inflect</div></div>
+              </div>
+              <p class="quote">Unit economics finally make sense. We replaced a $24k/mo agency retainer with one Duck.design seat.</p>
+              <div class="tfooter"><span class="src">via G2</span><span class="stars">★★★★★</span></div>
+            </article>
+
+            <article class="dd-tcard">
+              <div class="dd-tcard-top">
+                <div class="dd-avatar" style="background:#C2554A">NA</div>
+                <div><div class="name">Nora Adebayo</div><div class="role">Head of Design · Mercer</div></div>
+              </div>
+              <p class="quote">The pricing model is a cheat code for early-stage companies. Don't sleep on it.</p>
+              <div class="tfooter"><span class="src">via LinkedIn</span><span class="stars">★★★★★</span></div>
+            </article>
+
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ========================= BLOCK 6 — PRICING ========================= -->
+<section class="dd-price-sec" id="pricing">
+  <span class="dd-glow"></span>
+
+  <div class="dd-wrap dd-price-grid">
+    <div class="dd-price-intro dd-reveal">
+      <span class="dd-eyebrow">The Subscription</span>
+      <h2 class="dd-h2" style="margin-top:18px">One Flat Subscription. Your Entire Design &amp; Dev Stack.</h2>
+      <p>No headcount. No agency retainers. No surprise invoices. One predictable monthly fee unlocks an elite hybrid AI + human team on demand.</p>
+
+      <!-- Compact awards medallions — sit under the intro copy so the section height doesn't grow -->
+      <div class="dd-awards">
+        <div class="dd-award-item">
+          <a class="dd-award" href="#" aria-label="Influencer Marketing Hub — Best UX/UI Agencies globally">
+            <span class="stars">★★★★★</span>
+            <span class="src">Influencer<br><span class="accent">Marketing</span> Hub</span>
+          </a>
+          <span class="cap">Best UX/UI<br>Agencies globally</span>
+        </div>
+        <div class="dd-award-item">
+          <a class="dd-award" href="#" aria-label="Upwork — 100% Job Success Elite Partner Agency">
+            <span class="stars">★★★★★</span>
+            <span class="src lower">up<span class="accent">work</span></span>
+          </a>
+          <span class="cap">100% Job Success<br>Elite Partner Agency</span>
+        </div>
+        <div class="dd-award-item">
+          <a class="dd-award" href="#" aria-label="Clutch — Top 1 Web Development Companies 2026">
+            <span class="stars">★★★★★</span>
+            <span class="src">Clutch<span class="accent">.</span></span>
+          </a>
+          <span class="cap">Top 1 Web Development<br>Companies 2026</span>
+        </div>
+        <div class="dd-award-item">
+          <a class="dd-award" href="#" aria-label="The Manifest — Top 100 Design Agencies">
+            <span class="stars">★★★★★</span>
+            <span class="src"><span class="small">THE</span>Manifest</span>
+          </a>
+          <span class="cap">Top 100<br>Design Agencies</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="dd-price-card dd-reveal" data-delay="1">
+      <div class="dd-price-top"><span class="amt">$1,999</span><span class="per">/ month</span></div>
+      <p class="lead">Everything you need to design, build and ship &mdash; in one queue.</p>
+      <a href="#" class="dd-btn dd-btn--primary">Get Started Now
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path d="M5 12h14M13 6l6 6-6 6"/></svg></a>
+      <p class="guarantee"><b>7-Day Money-Back Guarantee</b> · cancel anytime</p>
+      <ul class="dd-price-list" style="margin-top:22px">
+        <li>Full Web Development &amp; Landing Page deployment via AI Coding</li>
+        <li>World-class UI/UX &amp; digital product design</li>
+        <li>Brand identity &amp; premium graphic production (AI + human hybrid)</li>
+        <li>High-converting marketing ads &amp; motion graphics</li>
+        <li>Unlimited task queue management</li>
+        <li>Ultra-fast delivery: first iterations in 24&ndash;48 hours</li>
+        <li>Dedicated Slack workspace &amp; personal project manager</li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+<!-- ========================= BLOCK 7 — FAQ ========================= -->
+<section class="dd-faq" id="faq">
+  <div class="dd-wrap dd-faq-grid">
+    <div class="dd-reveal">
+      <span class="dd-eyebrow">FAQ</span>
+      <h2 class="dd-h2" style="margin-top:18px">Questions,<br>answered.</h2>
+      <p style="color:var(--dd-muted);margin-top:16px">Still unsure? <a href="#final" style="color:var(--dd-neon)">Book a quick call</a> and we&rsquo;ll walk you through it.</p>
+    </div>
+
+    <div class="dd-acc dd-reveal" data-delay="1">
+      <div class="dd-acc-item">
+        <button class="dd-acc-q">Who owns the code and final assets?<span class="dd-acc-ico"></span></button>
+        <div class="dd-acc-a"><p>You do. 100%. Upon approval, all intellectual property, clean source code and design assets are fully transferred to your business &mdash; no strings attached.</p></div>
+      </div>
+      <div class="dd-acc-item">
+        <button class="dd-acc-q">Can I pause or cancel my subscription?<span class="dd-acc-ico"></span></button>
+        <div class="dd-acc-a"><p>Yes. We operate on a rolling, commitment-free monthly model. You can pause or cancel at any time with a single click &mdash; no lock-in, no penalties.</p></div>
+      </div>
+      <div class="dd-acc-item">
+        <button class="dd-acc-q">How does AI Coding differ from standard No-Code platforms?<span class="dd-acc-ico"></span></button>
+        <div class="dd-acc-a"><p>No-Code platforms like Wix or Squarespace trap your product inside their closed, unoptimizable ecosystems. AI Coding generates raw, custom, scalable production code that can be deployed on any server and maintained by any engineering team down the road.</p></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ========================= BLOCK 8 — FINAL CTA ========================= -->
+<section class="dd-final" id="final">
+  <div class="dd-wrap">
+    <div class="dd-final-box dd-reveal">
+      <span class="dd-glow"></span>
+      <div>
+        <h2>Ready to Accelerate Your Product Deployment?</h2>
+        <p>Book a quick 15-minute intro call to see exactly how much budget and dev time Duck.design can save your company this quarter.</p>
+        <a href="#" class="dd-btn dd-btn--primary">Book a Call
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path d="M5 12h14M13 6l6 6-6 6"/></svg></a>
+      </div>
+
+      <!-- Mock calendar booking widget (replace with real Cal.com / Calendly embed in WP) -->
+      <div class="dd-cal">
+        <div class="dd-cal-top"><span>June 2026</span><span class="nav">&lsaquo; &nbsp; &rsaquo;</span></div>
+        <div class="dd-cal-grid" id="ddCal">
+          <b>Mo</b><b>Tu</b><b>We</b><b>Th</b><b>Fr</b><b>Sa</b><b>Su</b>
+          <!-- day cells injected by JS -->
+        </div>
+        <div class="dd-cal-slots" id="ddSlots">
+          <button>10:00</button><button class="sel">11:30</button><button>15:00</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ========================= FOOTER ========================= -->
+<footer class="dd-footer">
+  <div class="dd-wrap">
+    <div class="dd-footer-grid">
+      <div class="dd-footer-about">
+        <a href="#" class="dd-logo"><span class="dd-mark"><span>🦆</span></span> Duck<span style="color:var(--dd-neon)">.</span>design</a>
+        <p>Your full-service design &amp; AI development partner. Unlimited creative, one flat monthly fee.</p>
+      </div>
+      <div class="dd-footer-col">
+        <h5>Services</h5>
+        <a href="#">AI Coding</a><a href="#">UI/UX Design</a><a href="#">Brand Identity</a><a href="#">Motion Graphics</a>
+      </div>
+      <div class="dd-footer-col">
+        <h5>Company</h5>
+        <a href="#">About</a><a href="#">Portfolio</a><a href="#">Case Studies</a><a href="#">Blog</a>
+      </div>
+      <div class="dd-footer-col">
+        <h5>Get Started</h5>
+        <a href="#pricing">Pricing</a><a href="#final">Book a Call</a><a href="#">Contact</a>
+      </div>
+    </div>
+    <div class="dd-footer-bottom">
+      <span>© 2026 Duck.design — All rights reserved.</span>
+      <span>Privacy · Terms · Built with AI Coding</span>
+    </div>
+  </div>
+</footer>
+
+<script>
+/* ============================================================================
+   JS — all behaviour namespaced inside an IIFE to keep the WP global scope clean
+   ========================================================================== */
+(function(){
+  "use strict";
+
+  /* ---- Sticky header state ---- */
+  var header = document.getElementById('ddHeader');
+  window.addEventListener('scroll', function(){
+    header.classList.toggle('is-scrolled', window.scrollY > 20);
+  }, { passive:true });
+
+  /* ---- Scroll reveal via IntersectionObserver ---- */
+  var io = new IntersectionObserver(function(entries){
+    entries.forEach(function(e){
+      if(e.isIntersecting){ e.target.classList.add('is-in'); io.unobserve(e.target); }
+    });
+  }, { threshold:0.14 });
+  document.querySelectorAll('.dd-reveal').forEach(function(el){ io.observe(el); });
+
+  /* ---- FAQ accordion ---- */
+  document.querySelectorAll('.dd-acc-q').forEach(function(btn){
+    btn.addEventListener('click', function(){
+      var item = btn.closest('.dd-acc-item');
+      var ans  = item.querySelector('.dd-acc-a');
+      var open = item.classList.contains('open');
+      // Close siblings for a clean single-open accordion
+      item.parentElement.querySelectorAll('.dd-acc-item.open').forEach(function(other){
+        if(other !== item){ other.classList.remove('open'); other.querySelector('.dd-acc-a').style.maxHeight = null; }
+      });
+      if(open){ item.classList.remove('open'); ans.style.maxHeight = null; }
+      else{ item.classList.add('open'); ans.style.maxHeight = ans.scrollHeight + 'px'; }
+    });
+  });
+
+  /* ---- Mock booking calendar (June 2026 starts on a Monday) ---- */
+  (function buildCalendar(){
+    var grid = document.getElementById('ddCal');
+    if(!grid) return;
+    var free = { 3:1, 4:1, 5:1, 10:1, 11:1, 12:1, 17:1, 18:1, 24:1, 25:1 }; // open days
+    var selected = 11;
+    for(var d=1; d<=30; d++){
+      var b = document.createElement('button');
+      b.textContent = d;
+      if(free[d]) b.classList.add('free'); else b.classList.add('off');
+      if(d === selected) b.classList.add('sel');
+      (function(day, el){
+        el.addEventListener('click', function(){
+          grid.querySelectorAll('button.sel').forEach(function(x){ x.classList.remove('sel'); });
+          el.classList.add('sel');
+        });
+      })(d, b);
+      grid.appendChild(b);
+    }
+    var slots = document.getElementById('ddSlots');
+    slots.querySelectorAll('button').forEach(function(s){
+      s.addEventListener('click', function(){
+        slots.querySelectorAll('button').forEach(function(x){ x.classList.remove('sel'); });
+        s.classList.add('sel');
+      });
+    });
+  })();
+
+  /* ---- HERO: auto-generating IDE that materialises into a live preview ----
+     Each line carries: plain text (typed char-by-char), highlighted HTML
+     (swapped in once typed), and an optional preview step to reveal in sync. */
+  (function heroIDE(){
+    var codeEl = document.getElementById('ddCode');
+    var prevEl = document.getElementById('ddPrev');
+    if(!codeEl || !prevEl) return;
+
+    var lines = [
+      { t:'export default function Hero() {',
+        h:'<span class="tk-key">export default</span> <span class="tk-key">function</span> <span class="tk-fn">Hero</span>() {' },
+      { t:'  return (',
+        h:'  <span class="tk-key">return</span> (' },
+      { t:'    <section className="hero">',
+        h:'    <span class="tk-pn">&lt;</span><span class="tk-tag">section</span> <span class="tk-attr">className</span>=<span class="tk-str">"hero"</span><span class="tk-pn">&gt;</span>', s:0 },
+      { t:'      <h1>Ship products faster.</h1>',
+        h:'      <span class="tk-pn">&lt;</span><span class="tk-tag">h1</span><span class="tk-pn">&gt;</span>Ship products faster.<span class="tk-pn">&lt;/</span><span class="tk-tag">h1</span><span class="tk-pn">&gt;</span>', s:1 },
+      { t:'      <p>Production-ready in days.</p>',
+        h:'      <span class="tk-pn">&lt;</span><span class="tk-tag">p</span><span class="tk-pn">&gt;</span>Production-ready in days.<span class="tk-pn">&lt;/</span><span class="tk-tag">p</span><span class="tk-pn">&gt;</span>', s:2 },
+      { t:'      <Button>Get started</Button>',
+        h:'      <span class="tk-pn">&lt;</span><span class="tk-tag">Button</span><span class="tk-pn">&gt;</span>Get started<span class="tk-pn">&lt;/</span><span class="tk-tag">Button</span><span class="tk-pn">&gt;</span>', s:3 },
+      { t:'      <CardGrid items={2} />',
+        h:'      <span class="tk-pn">&lt;</span><span class="tk-tag">CardGrid</span> <span class="tk-attr">items</span>=<span class="tk-pn">{</span><span class="tk-str">2</span><span class="tk-pn">}</span> <span class="tk-pn">/&gt;</span>', s:4 },
+      { t:'    </section>',
+        h:'    <span class="tk-pn">&lt;/</span><span class="tk-tag">section</span><span class="tk-pn">&gt;</span>' },
+      { t:'  );',  h:'  );' },
+      { t:'}',      h:'}' }
+    ];
+
+    var prevSteps = prevEl.querySelectorAll('.dd-prev-el');
+    var li = 0, ci = 0;
+    var rendered = []; // already-completed lines (highlighted HTML)
+
+    function lnNum(n){ return '<span class="dd-code-ln">' + n + '</span>'; }
+
+    function paint(currentTyped){
+      var html = '';
+      for(var i=0;i<rendered.length;i++){
+        html += '<div class="dd-code-line">' + lnNum(i+1) + '<span class="dd-code-tx">' + rendered[i] + '</span></div>';
+      }
+      if(currentTyped !== null){
+        html += '<div class="dd-code-line">' + lnNum(rendered.length+1) +
+                '<span class="dd-code-tx">' + currentTyped + '<span class="dd-caret"></span></span></div>';
+      }
+      codeEl.innerHTML = html;
+    }
+
+    function revealStep(stepIdx){
+      prevSteps.forEach(function(el){
+        if(parseInt(el.getAttribute('data-step'),10) === stepIdx) el.classList.add('show');
+      });
+    }
+
+    function escapeForType(str){
+      return str.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+    }
+
+    function typeLine(){
+      if(li >= lines.length){ setTimeout(resetAll, 2600); return; }
+      var line = lines[li];
+      if(ci <= line.t.length){
+        paint(escapeForType(line.t.slice(0, ci)));
+        ci++;
+        setTimeout(typeLine, 16 + Math.random()*26);
+      } else {
+        // Line finished: store highlighted HTML, trigger preview reveal, advance
+        rendered.push(line.h);
+        if(typeof line.s !== 'undefined') revealStep(line.s);
+        li++; ci = 0;
+        paint(null);
+        setTimeout(typeLine, 120);
+      }
+    }
+
+    function resetAll(){
+      rendered = []; li = 0; ci = 0;
+      prevSteps.forEach(function(el){ el.classList.remove('show'); });
+      typeLine();
+    }
+
+    typeLine();
+  })();
+
+  /* ---- Cursor-follow 3D tilt + spotlight on interactive cards ----
+     Sets --mx/--my (for the radial spotlight) and a subtle perspective tilt.
+     A fast inline transition is applied while moving; mouseleave restores the
+     slower CSS transition for a smooth spring-back. Skipped for reduced motion. */
+  var reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  if(!reduceMotion){
+    var tiltEls = document.querySelectorAll('.dd-step, .dd-cell, .dd-vs-col, .dd-price-card, .dd-award');
+    tiltEls.forEach(function(el){
+      var frame = null;
+      el.addEventListener('mousemove', function(e){
+        var r = el.getBoundingClientRect();
+        var px = (e.clientX - r.left) / r.width;   // 0..1 horizontal
+        var py = (e.clientY - r.top)  / r.height;  // 0..1 vertical
+        // Bigger surfaces get a gentler tilt so the motion stays elegant
+        var max = (el.classList.contains('dd-vs-col') || el.classList.contains('dd-price-card')) ? 3 : 5.5;
+        var ry = (px - 0.5) * max * 2;   // rotateY
+        var rx = (0.5 - py) * max * 2;   // rotateX
+        if(frame) cancelAnimationFrame(frame);
+        frame = requestAnimationFrame(function(){
+          el.style.setProperty('--mx', (px*100).toFixed(1) + '%');
+          el.style.setProperty('--my', (py*100).toFixed(1) + '%');
+          el.style.transition = 'transform .1s ease-out';
+          el.style.transform = 'perspective(1000px) rotateX(' + rx.toFixed(2) + 'deg) rotateY(' + ry.toFixed(2) + 'deg) translateY(-6px)';
+        });
+      });
+      el.addEventListener('mouseleave', function(){
+        if(frame) cancelAnimationFrame(frame);
+        el.style.transition = 'transform .55s cubic-bezier(.2,.8,.2,1)';
+        el.style.transform = '';
+        // Recentre the spotlight so the next hover starts neutral
+        el.style.setProperty('--mx', '50%');
+        el.style.setProperty('--my', '50%');
+      });
+    });
+  }
+
+  /* ---- Mobile burger: simple anchor jump to booking (placeholder) ---- */
+  var burger = document.querySelector('.dd-burger');
+  if(burger){ burger.addEventListener('click', function(){ location.hash = '#final'; }); }
+
+})();
+</script>
+</body>
+</html>

@@ -1,0 +1,22 @@
+# рабочие артефакты / временные файлы
+*.png
+*.zip
+snapshot*.json
+ops.json
+conversation-full.txt
+extract.js
+replay.js
+.playwright-mcp/
+export/
+docs/
+ref/
+
+# оставляем только первую версию лендинга (versions/v1-baseline)
+/build/
+/versions/v2-improved/
+/versions/v3-native/
+/versions/v3-services/
+
+# но фоны первой версии лендинга нужны
+!/versions/v1-baseline/assets/
+!/versions/v1-baseline/assets/*.png
