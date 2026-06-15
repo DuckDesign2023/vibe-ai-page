@@ -991,6 +991,59 @@ body.dd-menu-open .dd-mobile-menu{ transform:none; opacity:1; pointer-events:aut
   .dd-footer-grid{ gap:24px; }
 }
 
+/* ============================================================================
+   22. SUPERSIDE-STYLE FLOATING HEADER + REMOVE TRUST DIVIDERS
+   ========================================================================== */
+
+/* 22.1 — Remove the hairline divider lines around the "Trusted by" bar */
+.dd-trust{ border-block:none; }
+
+/* 22.2 — Floating, glassy, pill-shaped header (Superside-inspired) */
+.dd-header{ padding:14px 0; background:transparent !important; border-bottom:none !important; }
+.dd-header .dd-nav{
+  height:62px; padding:0 14px 0 24px;
+  background:rgba(255,255,255,.72);
+  -webkit-backdrop-filter:blur(16px) saturate(140%);
+  backdrop-filter:blur(16px) saturate(140%);
+  border:1px solid var(--dd-line);
+  border-radius:100px;
+  box-shadow:0 10px 30px -16px rgba(20,22,40,.18);
+  transition:background .3s ease, box-shadow .3s ease, border-color .3s ease;
+}
+.dd-header.is-scrolled .dd-nav{
+  background:rgba(255,255,255,.9);
+  box-shadow:0 14px 38px -16px rgba(20,22,40,.26);
+}
+
+/* 22.3 — Nav links become soft hover "pills" (drop the underline) */
+.dd-nav-links{ gap:4px; }
+.dd-nav-links a{
+  padding:9px 15px; border-radius:100px; font-weight:600;
+  color:var(--dd-muted); transition:background .25s ease, color .2s ease;
+}
+.dd-nav-links a:hover{ background:rgba(20,22,40,.06); color:var(--dd-text); }
+.dd-nav-links a::after{ display:none !important; }
+
+/* 22.4 — Right-side action group: Log in + CTA */
+.dd-nav-right{ display:flex; align-items:center; gap:18px; }
+.dd-nav-login{
+  font-family:var(--font-display); font-weight:700; font-size:.9rem;
+  color:var(--dd-text); white-space:nowrap; transition:color .2s ease;
+}
+.dd-nav-login:hover{ color:var(--dd-neon-dim); }
+@media(max-width:900px){ .dd-nav-login{ display:none; } }
+
+/* 22.5 — Mobile menu as a matching floating rounded card under the pill */
+.dd-mobile-menu{
+  top:84px; left:28px; right:28px; border:1px solid var(--dd-line);
+  border-radius:22px; box-shadow:0 26px 54px -22px rgba(20,22,40,.32);
+  background:rgba(255,255,255,.97);
+  padding:10px 16px 18px;
+}
+body.dd-menu-open .dd-header{ background:transparent !important; }
+body.dd-menu-open .dd-header .dd-nav{ background:rgba(255,255,255,.95); }
+@media(max-width:560px){ .dd-mobile-menu{ left:18px; right:18px; } }
+
 </style>
 
 <!-- ===== SEO: structured data (schema.org JSON-LD) ===== -->
@@ -1089,8 +1142,11 @@ body.dd-menu-open .dd-mobile-menu{ transform:none; opacity:1; pointer-events:aut
       <a href="#pricing">Pricing</a>
       <a href="#faq">FAQ</a>
     </nav>
-    <a href="#final" class="dd-btn dd-btn--primary">Book a Demo</a>
-    <button class="dd-burger" aria-label="Menu" aria-controls="ddMobileMenu" aria-expanded="false"><span></span><span></span><span></span></button>
+    <div class="dd-nav-right">
+      <a href="#" class="dd-nav-login">Log in</a>
+      <a href="#final" class="dd-btn dd-btn--primary">Book a Demo</a>
+      <button class="dd-burger" aria-label="Menu" aria-controls="ddMobileMenu" aria-expanded="false"><span></span><span></span><span></span></button>
+    </div>
   </div>
 
   <!-- Mobile slide-down menu (shown on ≤900px, toggled by the burger) -->
@@ -1101,6 +1157,7 @@ body.dd-menu-open .dd-mobile-menu{ transform:none; opacity:1; pointer-events:aut
     <a href="#trust">Trust</a>
     <a href="#pricing">Pricing</a>
     <a href="#faq">FAQ</a>
+    <a href="#">Log in</a>
     <a href="#final" class="dd-btn dd-btn--primary">Book a Demo</a>
   </nav>
 </header>
