@@ -835,6 +835,136 @@ body::after{ display:none; }
 .dd-final-box{ background: var(--bg-cta); }
 .dd-love{ background: var(--bg-trust); }
 
+/* ============================================================================
+   21. LIGHTER "AWESOMIC" REFRESH + MOBILE UX
+   ----------------------------------------------------------------------------
+   Appended last so it overrides everything above by natural cascade. Goal:
+   a brighter, airier, more lightweight feel (white instead of warm cream,
+   no heavy neon glows, softer shadows, rounder cards, more whitespace) plus a
+   real, accessible mobile navigation menu.
+   ========================================================================== */
+
+/* 21.1 — Brighter, cooler, airier palette --------------------------------- */
+:root{
+  --dd-bg:        #FFFFFF;            /* clean white page */
+  --dd-bg-2:      #F6F7F9;            /* light gray alt section */
+  --dd-surface:   #FFFFFF;            /* white cards */
+  --dd-surface-2: #F7F8FA;            /* faint gray card variant */
+  --dd-line:      rgba(17,17,26,.07);
+  --dd-line-2:    rgba(17,17,26,.12);
+  --dd-text:      #15161B;
+  --dd-muted:     #6A6C77;
+  --dd-faint:     #A0A2AD;
+  --radius:       26px;               /* rounder, friendlier corners */
+  --radius-sm:    16px;
+  --maxw:         1200px;
+}
+
+/* 21.2 — Calm the atmosphere: drop heavy glows + soften shadows ----------- */
+.dd-glow{ display:none; }             /* remove blurred neon blobs entirely */
+.dd-step:hover, .dd-cell:hover, .dd-tcard:hover{
+  box-shadow:0 18px 42px -26px rgba(20,22,40,.22);
+}
+.dd-ide{ box-shadow:0 30px 70px -42px rgba(20,22,40,.4); }
+.dd-ide:hover{ box-shadow:0 40px 90px -42px rgba(20,22,40,.45); }
+.dd-price-card{ box-shadow:0 30px 80px -52px rgba(20,22,40,.5); }
+
+/* 21.3 — More whitespace + lighter section rhythm ------------------------- */
+.dd-section-head{ margin-bottom:60px; }
+.dd-step, .dd-cell{ padding:36px 32px; }
+
+/* 21.4 — Whiter overlays on the AI background images (were warm cream) ---- */
+:root{
+  --bg-hero:
+    linear-gradient(rgba(255,255,255,.60), rgba(255,255,255,.86)),
+    url('assets/hero-bg.png') center/cover no-repeat;
+  --bg-trust:
+    linear-gradient(rgba(255,255,255,.86), rgba(255,255,255,.95)),
+    url('assets/trust-bg.png') center/cover no-repeat;
+}
+
+/* 21.5 — Final CTA: was a dark "dunes" box → light, friendly yellow panel - */
+.dd-final-box{
+  background:linear-gradient(135deg,#FFF4D2,#FFFDF6);
+  border:1px solid rgba(255,202,65,.5);
+  box-shadow:0 30px 80px -55px rgba(255,202,65,.6);
+  --dd-line:   rgba(20,20,20,.08);
+  --dd-line-2: rgba(20,20,20,.14);
+  --dd-text:   #15161B;
+  --dd-muted:  #6A6C77;
+  --dd-faint:  #9B9BA0;
+  color:var(--dd-text);
+}
+.dd-cal{ background:#fff; }
+
+/* 21.6 — Make brand-yellow text readable on the new white surfaces -------- */
+.dd-step .num{ color:var(--dd-neon-dim); }
+.dd-acc-q:hover{ color:var(--dd-neon-dim); }
+.dd-footer-col a:hover{ color:var(--dd-neon-dim); }
+.dd-love-stat .stars,
+.dd-award .stars,
+.dd-tcard:not(.hi) .stars,
+.dd-tcard:not(.hi) .quote::before{ color:var(--dd-neon-dim); }
+
+/* 21.7 — Sticky header + animated burger --------------------------------- */
+.dd-header.is-scrolled{ background:rgba(255,255,255,.85); border-bottom:1px solid var(--dd-line); }
+body.dd-menu-open .dd-header{ background:rgba(255,255,255,.98); border-bottom:1px solid var(--dd-line); }
+body.dd-menu-open{ overflow:hidden; }
+.dd-burger span{ transition:transform .3s ease, opacity .2s ease; }
+body.dd-menu-open .dd-burger span:nth-child(1){ transform:translateY(7px) rotate(45deg); }
+body.dd-menu-open .dd-burger span:nth-child(2){ opacity:0; }
+body.dd-menu-open .dd-burger span:nth-child(3){ transform:translateY(-7px) rotate(-45deg); }
+
+/* 21.8 — Real mobile slide-down menu ------------------------------------- */
+.dd-mobile-menu{
+  position:fixed; left:0; right:0; top:72px; z-index:999;
+  background:rgba(255,255,255,.98); backdrop-filter:blur(16px);
+  border-bottom:1px solid var(--dd-line);
+  display:flex; flex-direction:column; padding:14px 24px 26px;
+  transform:translateY(-14px); opacity:0; pointer-events:none;
+  transition:opacity .28s ease, transform .28s ease;
+  max-height:calc(100dvh - 72px); overflow-y:auto;
+}
+body.dd-menu-open .dd-mobile-menu{ transform:none; opacity:1; pointer-events:auto; }
+.dd-mobile-menu a:not(.dd-btn){
+  font-family:var(--font-display); font-weight:700; font-size:1.1rem; color:var(--dd-text);
+  padding:15px 4px; border-bottom:1px solid var(--dd-line);
+}
+.dd-mobile-menu a:not(.dd-btn):active{ color:var(--dd-neon-dim); }
+.dd-mobile-menu .dd-btn{ margin-top:18px; width:100%; }
+@media(min-width:901px){ .dd-mobile-menu{ display:none; } }
+
+/* 21.9 — Responsive polish (tablet) -------------------------------------- */
+@media(max-width:900px){
+  .dd-how,.dd-vs,.dd-cap,.dd-faq,.dd-price-sec,.dd-love,.dd-stack{ padding:80px 0; }
+  .dd-hero{ padding:120px 0 70px; }
+  .dd-section-head{ margin-bottom:42px; }
+  .dd-final-box{ padding:44px 32px; }
+}
+
+/* 21.10 — Responsive polish (phones) ------------------------------------- */
+@media(max-width:560px){
+  .dd-wrap{ padding-inline:18px; }
+  .dd-how,.dd-vs,.dd-cap,.dd-faq,.dd-price-sec,.dd-love,.dd-stack{ padding:60px 0; }
+  .dd-hero{ padding:104px 0 54px; }
+  .dd-hero h1{ font-size:2.15rem; line-height:1.08; margin:18px 0 18px; }
+  .dd-hero-sub{ font-size:1.02rem; }
+  .dd-h2{ font-size:1.85rem; }
+  .dd-section-head{ margin-bottom:34px; }
+  .dd-step, .dd-cell{ padding:26px 22px; }
+  .dd-vs-col{ padding:28px 22px; }
+  .dd-price-card{ padding:32px 24px; }
+  .dd-price-top .amt{ font-size:2.6rem; }
+  .dd-final-box{ padding:34px 22px; }
+  .dd-btn{ padding:14px 22px; }
+  .dd-hero-cta{ gap:12px; }
+  .dd-hero-cta .dd-btn{ width:100%; }      /* stacked, full-width CTAs */
+  .dd-code{ border-right:none; }           /* preview hidden → no dangling divider */
+  .dd-trust-track{ gap:48px; }
+  .dd-trust-track span{ font-size:1.25rem; }
+  .dd-footer-grid{ gap:24px; }
+}
+
 </style>
 </head>
 <body>
@@ -864,8 +994,19 @@ body::after{ display:none; }
       <a href="#faq">FAQ</a>
     </nav>
     <a href="#final" class="dd-btn dd-btn--primary">Book a Demo</a>
-    <button class="dd-burger" aria-label="Menu"><span></span><span></span><span></span></button>
+    <button class="dd-burger" aria-label="Menu" aria-controls="ddMobileMenu" aria-expanded="false"><span></span><span></span><span></span></button>
   </div>
+
+  <!-- Mobile slide-down menu (shown on ≤900px, toggled by the burger) -->
+  <nav class="dd-mobile-menu" id="ddMobileMenu" aria-label="Mobile navigation">
+    <a href="#how">How it works</a>
+    <a href="#vs">AI vs Traditional</a>
+    <a href="#capabilities">Capabilities</a>
+    <a href="#trust">Trust</a>
+    <a href="#pricing">Pricing</a>
+    <a href="#faq">FAQ</a>
+    <a href="#final" class="dd-btn dd-btn--primary">Book a Demo</a>
+  </nav>
 </header>
 
 <!-- ========================= BLOCK 1 — HERO ========================= -->
@@ -1444,7 +1585,7 @@ body::after{ display:none; }
     <div class="dd-reveal">
       <span class="dd-eyebrow">FAQ</span>
       <h2 class="dd-h2" style="margin-top:18px">Questions,<br>answered.</h2>
-      <p style="color:var(--dd-muted);margin-top:16px">Still unsure? <a href="#final" style="color:var(--dd-neon)">Book a quick call</a> and we&rsquo;ll walk you through it.</p>
+      <p style="color:var(--dd-muted);margin-top:16px">Still unsure? <a href="#final" style="color:var(--dd-neon-dim)">Book a quick call</a> and we&rsquo;ll walk you through it.</p>
     </div>
 
     <div class="dd-acc dd-reveal" data-delay="1">
@@ -1702,9 +1843,27 @@ body::after{ display:none; }
     });
   }
 
-  /* ---- Mobile burger: simple anchor jump to booking (placeholder) ---- */
-  var burger = document.querySelector('.dd-burger');
-  if(burger){ burger.addEventListener('click', function(){ location.hash = '#final'; }); }
+  /* ---- Mobile menu: accessible slide-down toggle ---- */
+  (function mobileMenu(){
+    var burger = document.querySelector('.dd-burger');
+    var menu   = document.getElementById('ddMobileMenu');
+    if(!burger || !menu) return;
+
+    function setOpen(open){
+      document.body.classList.toggle('dd-menu-open', open);
+      burger.setAttribute('aria-expanded', open ? 'true' : 'false');
+    }
+    burger.addEventListener('click', function(){
+      setOpen(!document.body.classList.contains('dd-menu-open'));
+    });
+    // Close after picking a destination
+    menu.querySelectorAll('a').forEach(function(a){
+      a.addEventListener('click', function(){ setOpen(false); });
+    });
+    // Close on Escape and when resizing back up to desktop
+    document.addEventListener('keydown', function(e){ if(e.key === 'Escape') setOpen(false); });
+    window.addEventListener('resize', function(){ if(window.innerWidth > 900) setOpen(false); });
+  })();
 
 })();
 </script>
