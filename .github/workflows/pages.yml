@@ -36,11 +36,19 @@ jobs:
           # Автоматически включить Pages, если ещё не включён
           enablement: true
 
-      - name: Upload landing as artifact
+      - name: Assemble site (v1 at root, v2 at /v2/)
+        run: |
+          rm -rf _site
+          mkdir -p _site
+          cp -r versions/v1-baseline/. _site/
+          mkdir -p _site/v2
+          cp -r versions/v2/. _site/v2/
+
+      - name: Upload site as artifact
         uses: actions/upload-pages-artifact@v3
         with:
-          # Папка с самодостаточным index.html
-          path: versions/v1-baseline
+          # Собранный сайт: v1 в корне, v2 в /v2/
+          path: _site
 
       - name: Deploy to GitHub Pages
         id: deployment
