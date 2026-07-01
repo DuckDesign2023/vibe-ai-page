@@ -1436,17 +1436,17 @@ body.menu-open{ overflow:hidden; }
 .da.is-in .da-rail-line{ transform:scaleX(1); }
 /* the travelling light IS the rail line itself lighting up — a lit segment running along the SAME 1px path.
    clip-path above keeps it (horizontally) inside the drawn line while letting the vertical glow bloom. */
-.da-rail-line::before{ content:""; position:absolute; top:0; bottom:0; left:0; width:180px;
-  transform:translateX(var(--lx,-300px)); opacity:var(--lop,0); pointer-events:none;
-  background:linear-gradient(90deg, rgba(255,202,65,0), var(--acc) 46%, var(--acc) 54%, rgba(255,202,65,0));
-  filter:drop-shadow(0 0 8px rgba(255,202,65,.65)); }
+.da-rail-line::before{ content:""; position:absolute; top:0; bottom:0;
+  left:var(--lx,0); width:var(--lw,0); opacity:var(--lop,0); pointer-events:none;
+  background:linear-gradient(90deg, rgba(255,202,65,0), var(--acc));   /* drawn from the source icon (dim tail) to the head (bright) */
+  filter:drop-shadow(0 0 8px rgba(255,202,65,.6)); }
 .da-pulse{ display:none; }
 .da-grid{ position:relative; z-index:2; display:grid; grid-template-columns:repeat(4,1fr);
   gap:clamp(16px,2.4vw,34px); list-style:none; margin:0; padding:0; }
 .da-node{ position:relative; list-style:none; }
 .da-node::marker{ content:""; }
 .da-mark{ position:relative; width:44px; height:44px; margin-bottom:26px; display:grid; place-items:center; }
-.da-mark::before{ content:""; position:absolute; left:50%; top:50%; width:26px; height:26px;
+.da-mark::before{ content:""; position:absolute; left:50%; top:50%; width:42px; height:26px;
   transform:translate(-50%,-50%); background:#0C0F0C; z-index:0; }
 .da-ic{ position:relative; z-index:1; width:22px; height:22px; }
 .da-ic *{ fill:none; stroke:var(--faint); stroke-width:2; stroke-linejoin:miter; stroke-linecap:butt;
@@ -1600,14 +1600,17 @@ body.menu-open{ overflow:hidden; }
   function stopSweep(){ if(rafId){ cancelAnimationFrame(rafId); rafId=0; } if(railLine) railLine.style.setProperty('--lop',0); }
   function startSweep(){
     stopSweep();
-    const INTRO=850, MOVE=1200, PAUSE=650, GAP=650, HALF=90;
+    const INTRO=850, MOVE=1200, PAUSE=650, GAP=650, W=150;
     const es = t => 0.5 - 0.5*Math.cos(Math.PI*Math.min(Math.max(t,0),1));   /* smooth ease-in-out (sine) */
     let segs, idx=0, t0=null;
-    function setLight(px,op){ railLine.style.setProperty('--lx',(px-HALF)+'px'); railLine.style.setProperty('--lop',op); }
+    /* position by the comet HEAD (right edge); it starts/ends tucked under the icon masks */
+    /* the lit segment is DRAWN from the source icon (left, anchored) to the moving head (right) */
+    function setLight(src,head,op){ railLine.style.setProperty('--lx',src+'px');
+      railLine.style.setProperty('--lw',Math.max(0,head-src)+'px'); railLine.style.setProperty('--lop',op); }
     function build(){
       const rr=rail.getBoundingClientRect();
       const stops=nodes.map(n=>{ const m=n.querySelector('.da-mark').getBoundingClientRect(); return m.left + m.width/2 - rr.left; });
-      /* the light travels BETWEEN steps and fades OUT as it arrives — handing off into that step's shutter (bracket) draw. */
+      /* the light draws icon→icon: tail anchored at the source icon, head advancing to the next, then hands off to its shutter. */
       segs=[{t:'act',i:0},{t:'hold',d:INTRO}];
       for(let i=1;i<stops.length;i++){
         segs.push({t:'move',a:stops[i-1],b:stops[i],d:MOVE,i:i});
@@ -1615,13 +1618,14 @@ body.menu-open{ overflow:hidden; }
       }
       segs.push({t:'hold',d:GAP});
     }
-    build(); activate(0); setLight(0,0);
+    build(); activate(0); setLight(0,0,0);
     function step(ts){ if(t0===null)t0=ts; const seg=segs[idx], el=ts-t0;
       if(seg.t==='act'){ activate(seg.i); idx++; t0=ts; }
       else if(seg.t==='hold'){ railLine.style.setProperty('--lop',0); if(el>=seg.d){ idx++; t0=ts; } }
       else if(seg.t==='move'){ const p=Math.min(el/seg.d,1);
-        setLight(seg.a+(seg.b-seg.a)*es(p), Math.sin(p*Math.PI));   /* glow in leaving a step, out arriving at the next */
-        if(!seg.done && p>=0.8){ seg.done=true; activate(seg.i); }  /* hand off to the shutter as the light lands */
+        /* tail stays on the source icon; head advances to the destination icon; fade out as the head lands */
+        setLight(seg.a, seg.a+(seg.b-seg.a)*es(p), Math.min((1-p)/0.08,1));
+        if(!seg.done && p>=0.85){ seg.done=true; activate(seg.i); }  /* hand off to the shutter as the head lands under the icon */
         if(p>=1){ railLine.style.setProperty('--lop',0); idx++; t0=ts; } }
       if(idx>=segs.length){ idx=0; t0=ts; build(); activate(0); }
       rafId=requestAnimationFrame(step);
