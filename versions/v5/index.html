@@ -947,7 +947,8 @@ body.menu-open{ overflow:hidden; }
 .w-footer{ border-top:1px solid var(--line); padding:60px 0 40px; background:var(--bg-2); }
 .w-footer-grid{ display:grid; grid-template-columns:1.5fr 1fr 1fr 1.7fr 1.1fr; gap:36px 40px; margin-bottom:44px; align-items:start; }
 .w-footer-about{ max-width:300px; }
-.w-footer-links2{ display:grid; grid-template-columns:1fr 1fr; gap:0 26px; }
+.w-footer-links2{ display:flex; gap:0 26px; }
+.w-footer-links2 > div{ flex:1 1 0; min-width:0; }   /* independent columns → even vertical rhythm regardless of wrapping */
 @media(max-width:1040px){ .w-footer-grid{ grid-template-columns:1fr 1fr 1fr; } .w-footer-about{ grid-column:1 / -1; max-width:440px; } }
 @media(max-width:620px){ .w-footer-grid{ grid-template-columns:1fr 1fr; } .w-footer-col--wide{ grid-column:1 / -1; } }
 .w-footer-about .w-logo-svg{ height:24px; color:var(--text); margin-bottom:16px; }
@@ -1809,20 +1810,24 @@ body.menu-open{ overflow:hidden; }
       </div>
       <div class="w-footer-col w-footer-col--wide"><h5>Capabilities</h5>
         <div class="w-footer-links2">
-          <a href="https://duck.design/graphic-design-services/">Graphic Design</a>
-          <a href="https://duck.design/ux-ui-design-services/">UI/UX Design</a>
-          <a href="https://duck.design/motion-graphics/">Motion Graphics</a>
-          <a href="https://duck.design/app-ui-ux-design-services/">App UI/UX Design</a>
-          <a href="https://duck.design/infographic-design-and-custom-illustration-services/">Infographic &amp; Illustration</a>
-          <a href="https://duck.design/website-design-services/">Website Design</a>
-          <a href="https://duck.design/brand-identity-design-services/">Brand Identity</a>
-          <a href="https://duck.design/landing-page-design-services/">Landing Page Design</a>
-          <a href="https://duck.design/print-merchandise-and-packaging-design-services/">Print, Merch &amp; Packaging</a>
-          <a href="https://duck.design/powerpoint-design-services/">PowerPoint Design</a>
-          <a href="https://duck.design/saas-product-design-services/">SaaS Product Design</a>
-          <a href="https://duck.design/amazon-design-services/">Amazon Design</a>
-          <a href="https://duck.design/startup-design-services/">Startup Design</a>
-          <a href="https://duck.design/software-design-services/">Software Design</a>
+          <div>
+            <a href="https://duck.design/graphic-design-services/">Graphic Design</a>
+            <a href="https://duck.design/motion-graphics/">Motion Graphics</a>
+            <a href="https://duck.design/infographic-design-and-custom-illustration-services/">Infographic &amp; Illustration</a>
+            <a href="https://duck.design/brand-identity-design-services/">Brand Identity</a>
+            <a href="https://duck.design/print-merchandise-and-packaging-design-services/">Print, Merch &amp; Packaging</a>
+            <a href="https://duck.design/saas-product-design-services/">SaaS Product Design</a>
+            <a href="https://duck.design/startup-design-services/">Startup Design</a>
+          </div>
+          <div>
+            <a href="https://duck.design/ux-ui-design-services/">UI/UX Design</a>
+            <a href="https://duck.design/app-ui-ux-design-services/">App UI/UX Design</a>
+            <a href="https://duck.design/website-design-services/">Website Design</a>
+            <a href="https://duck.design/landing-page-design-services/">Landing Page Design</a>
+            <a href="https://duck.design/powerpoint-design-services/">PowerPoint Design</a>
+            <a href="https://duck.design/amazon-design-services/">Amazon Design</a>
+            <a href="https://duck.design/software-design-services/">Software Design</a>
+          </div>
         </div>
       </div>
       <div class="w-footer-col"><h5>Contact</h5>
