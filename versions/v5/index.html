@@ -1397,11 +1397,268 @@ body.menu-open{ overflow:hidden; }
 <!-- lightning ambient background (fixed full-screen, turns on after "By the numbers") -->
 <canvas class="w-lbg" id="wLbg" aria-hidden="true"></canvas>
 
+<!-- ============ [08] WHAT YOU GET — pipeline infographic (self-contained, scoped to .da) ============ -->
+<style>
+/* tokens scoped to .da so the section is self-sufficient and does not touch the site :root */
+.da{ --bg:#080A08; --panel:#15181A; --ink:#0E1112;
+  --line:rgba(255,255,255,.07); --line-2:rgba(255,255,255,.11);
+  --text:#F3F4EF; --soft:#C8CCC4; --muted:#9DA29A; --faint:#565B54;
+  --acc:#FFCA41; --acc-q:rgba(255,202,65,.5);
+  --display:'Syne',sans-serif; --body:'Manrope',sans-serif; --mono:'Space Mono',monospace; }
+  /* --maxw / --gut intentionally NOT set — inherit the site's :root so .da-wrap == .w-wrap */
+.da{ position:relative; overflow:hidden; padding:clamp(56px,8vw,104px) 0 clamp(48px,7vw,88px);
+  color:var(--text); font-family:var(--body); background:transparent; }
+/* steps live in a panel so they read over the site's ambient lightning animation */
+.da-panel{ position:relative; z-index:2; background:#0C0F0C; border:1px solid var(--line-2);
+  padding:clamp(30px,4vw,50px) clamp(22px,3.4vw,48px) clamp(20px,2.6vw,30px); }
+.da-wrap{ position:relative; z-index:2; width:min(100% - var(--gut)*2, var(--maxw)); margin-inline:auto; }
+/* section background + grain removed — the site's ambient lightning shows through */
+.da-head{ max-width:none; margin-bottom:clamp(46px,6vw,72px); }
+.da-eyebrow{ font-family:var(--mono); font-size:11.5px; letter-spacing:.22em; text-transform:uppercase;
+  color:var(--muted); display:inline-flex; align-items:center; gap:14px; }
+.da-eyebrow::before{ content:""; width:34px; height:1px; background:var(--line-2); }
+.da-eyebrow b{ color:var(--acc); font-weight:400; }
+.da-h2{ font-family:var(--display); font-weight:700; letter-spacing:-.022em; line-height:1.02;
+  font-size:clamp(2.1rem,5.2vw,3.5rem); color:#EDEFEA; margin:18px 0 14px; }
+.da-h2 .w{ display:inline-block; }
+.da-scan{ position:relative; display:inline-block; color:var(--acc); }
+.da-scan::before,.da-scan::after{ content:""; position:absolute; width:11px; height:11px;
+  border:1.6px solid var(--acc-q); opacity:0; transition:opacity .4s .2s; }
+.da-scan::before{ left:-13px; top:.02em; border-right:none; border-bottom:none; }
+.da-scan::after{ right:-13px; bottom:.06em; border-left:none; border-top:none; }
+.da.is-in .da-scan::before,.da.is-in .da-scan::after{ opacity:1; }
+.da-sub{ font-size:clamp(1rem,1.5vw,1.15rem); color:var(--muted); max-width:46ch; }
+.da-sub b{ color:var(--soft); font-weight:600; }
+.da-pipe{ position:relative; }
+.da-rail{ position:absolute; left:0; right:0; top:22px; height:1px; z-index:1; }
+.da-rail-line{ position:absolute; inset:0; background:var(--line-2); clip-path:inset(-9px 0px);
+  transform:scaleX(0); transform-origin:left center; transition:transform .9s cubic-bezier(.5,0,.2,1); }
+.da.is-in .da-rail-line{ transform:scaleX(1); }
+/* the travelling light IS the rail line itself lighting up — a lit segment running along the SAME 1px path.
+   clip-path above keeps it (horizontally) inside the drawn line while letting the vertical glow bloom. */
+.da-rail-line::before{ content:""; position:absolute; top:0; bottom:0; left:0; width:180px;
+  transform:translateX(var(--lx,-300px)); opacity:var(--lop,0); pointer-events:none;
+  background:linear-gradient(90deg, rgba(255,202,65,0), var(--acc) 46%, var(--acc) 54%, rgba(255,202,65,0));
+  filter:drop-shadow(0 0 8px rgba(255,202,65,.65)); }
+.da-pulse{ display:none; }
+.da-grid{ position:relative; z-index:2; display:grid; grid-template-columns:repeat(4,1fr);
+  gap:clamp(16px,2.4vw,34px); list-style:none; margin:0; padding:0; }
+.da-node{ position:relative; list-style:none; }
+.da-node::marker{ content:""; }
+.da-mark{ position:relative; width:44px; height:44px; margin-bottom:26px; display:grid; place-items:center; }
+.da-mark::before{ content:""; position:absolute; left:50%; top:50%; width:26px; height:26px;
+  transform:translate(-50%,-50%); background:#0C0F0C; z-index:0; }
+.da-ic{ position:relative; z-index:1; width:22px; height:22px; }
+.da-ic *{ fill:none; stroke:var(--faint); stroke-width:2; stroke-linejoin:miter; stroke-linecap:butt;
+  transition:stroke .35s; }
+.da-brk{ position:absolute; inset:0; z-index:1; width:100%; height:100%; overflow:visible; }
+.da-brk path{ fill:none; stroke:var(--acc); stroke-width:1;
+  stroke-dasharray:13; stroke-dashoffset:13; opacity:0; transition:opacity .3s; }
+.da-idx{ font-family:var(--mono); font-size:12px; letter-spacing:.2em; color:var(--faint); transition:color .35s; }
+.da-ttl{ font-family:var(--display); font-weight:600; font-size:clamp(1.12rem,1.9vw,1.42rem);
+  letter-spacing:-.01em; color:#E7E9E3; margin:7px 0 9px; line-height:1.1; }
+.da-desc{ font-size:.92rem; line-height:1.5; color:var(--muted); max-width:24ch; margin-bottom:18px; }
+.da-chip{ display:inline-flex; align-items:center; gap:9px; font-family:var(--mono); font-size:11px;
+  letter-spacing:.04em; text-transform:uppercase; color:var(--soft);
+  border:1px solid var(--line-2); padding:7px 13px; background:rgba(255,255,255,.012);
+  transition:border-color .35s, color .35s, background .35s; }
+.da-chip::before{ content:""; width:5px; height:5px; flex:0 0 auto; background:var(--faint); transition:background .35s; }
+.da-node.is-active .da-ic *{ stroke:var(--acc); }
+.da-node.is-active .da-brk path{ opacity:1; stroke-dashoffset:0;
+  transition:stroke-dashoffset .5s cubic-bezier(.5,0,.2,1) .05s, opacity .2s; }
+.da-node.is-active .da-idx{ color:var(--acc); }
+.da-node.is-active .da-chip{ border-color:var(--acc); color:#0E1112; background:var(--acc); }
+.da-node.is-active .da-chip::before{ background:#0E1112; }
+.da-foot{ margin-top:clamp(30px,4vw,44px); padding-top:26px; border-top:1px solid var(--line-2);
+  display:flex; align-items:baseline; gap:18px 28px; flex-wrap:wrap; justify-content:space-between; }
+.da-foot-line{ font-family:var(--mono); font-weight:400; font-size:11px; letter-spacing:.16em;
+  text-transform:uppercase; color:var(--faint); max-width:52ch; line-height:1.7; }
+.da-foot-line em{ font-style:normal; color:var(--acc); }
+.da-foot-meta{ font-family:var(--mono); font-size:11px; letter-spacing:.16em; text-transform:uppercase;
+  color:var(--faint); display:flex; align-items:center; gap:10px; }
+.da-foot-meta::before{ content:""; width:6px; height:6px; background:var(--acc); }
+.da .da-anim{ opacity:1; }
+.da.js .da-anim{ opacity:0; transform:translateY(14px); }
+.da.js.is-in .da-anim{ opacity:1; transform:none;
+  transition:opacity .6s cubic-bezier(.4,0,.2,1), transform .6s cubic-bezier(.4,0,.2,1); }
+.da.js .da-anim.d1{ transition-delay:.08s } .da.js .da-anim.d2{ transition-delay:.16s }
+.da.js .da-anim.d3{ transition-delay:.24s } .da.js .da-anim.d4{ transition-delay:.32s }
+.da.js .da-node{ opacity:0; transform:translateY(18px); }
+.da.js.is-in .da-node{ opacity:1; transform:none;
+  transition:opacity .55s cubic-bezier(.4,0,.2,1), transform .55s cubic-bezier(.4,0,.2,1); }
+@media(max-width:880px){
+  .da-grid{ grid-template-columns:1fr; gap:0; }
+  .da-rail{ left:34px; right:auto; top:0; bottom:0; width:1px; height:auto; }
+  .da-rail-line{ transform-origin:top center; transform:scaleY(0); }
+  .da.is-in .da-rail-line{ transform:scaleY(1); }
+  .da-rail-line::before{ display:none; }   /* light-sweep hidden on mobile — active step follows scroll */
+  .da-node{ padding:0 0 36px 74px; }
+  .da-mark{ position:absolute; left:12px; top:0; margin:0; }
+  .da-desc{ max-width:40ch; }
+}
+@media(prefers-reduced-motion:reduce){
+  .da.js .da-anim,.da.js .da-node{ opacity:1 !important; transform:none !important; transition:none !important; }
+}
+</style>
+<section class="da" id="what-you-get" aria-label="What you get">
+  <div class="da-wrap">
+    <header class="da-head">
+      <span class="da-eyebrow da-anim"><b>[ 08 ]</b>&nbsp; What you get</span>
+      <h2 class="da-h2">
+        <span class="w da-anim d1">From</span> <span class="w da-anim d1">first</span>
+        <span class="w da-anim d2">call</span> <span class="w da-anim d2">to</span>
+        <span class="w da-anim d3"><span class="da-scan">shipped</span></span>
+        <span class="w da-anim d3">product.</span>
+      </h2>
+      <p class="da-sub da-anim d4">AI handles the velocity. <b>Senior humans own the quality</b> — and you own everything we ship.</p>
+    </header>
+    <div class="da-panel">
+    <div class="da-pipe">
+      <div class="da-rail" aria-hidden="true">
+        <div class="da-rail-line"></div>
+        <div class="da-pulse"></div>
+      </div>
+      <ol class="da-grid">
+        <li class="da-node" data-i="0">
+          <div class="da-mark" aria-hidden="true">
+            <svg class="da-brk" viewBox="0 0 44 44"><path d="M2 12 V2 H12"/><path d="M32 2 H42 V12"/><path d="M42 32 V42 H32"/><path d="M12 42 H2 V32"/></svg>
+            <svg class="da-ic" viewBox="0 0 24 24"><path d="M3 4 H21 V16 H9 L5 20 V16 H3 Z"/></svg>
+          </div>
+          <div class="da-idx">01</div>
+          <h3 class="da-ttl">Brief</h3>
+          <p class="da-desc">One call. Share goals, references and scope — that’s the whole intake.</p>
+          <span class="da-chip" data-text="Start in 1 call">Start in 1 call</span>
+        </li>
+        <li class="da-node" data-i="1">
+          <div class="da-mark" aria-hidden="true">
+            <svg class="da-brk" viewBox="0 0 44 44"><path d="M2 12 V2 H12"/><path d="M32 2 H42 V12"/><path d="M42 32 V42 H32"/><path d="M12 42 H2 V32"/></svg>
+            <svg class="da-ic" viewBox="0 0 24 24"><path d="M12 2 L14.3 9.7 L22 12 L14.3 14.3 L12 22 L9.7 14.3 L2 12 L9.7 9.7 Z"/></svg>
+          </div>
+          <div class="da-idx">02</div>
+          <h3 class="da-ttl">AI builds</h3>
+          <p class="da-desc">Senior leads drive AI agents to generate clean, semantic code.</p>
+          <span class="da-chip" data-text="4× faster">4× faster</span>
+        </li>
+        <li class="da-node" data-i="2">
+          <div class="da-mark" aria-hidden="true">
+            <svg class="da-brk" viewBox="0 0 44 44"><path d="M2 12 V2 H12"/><path d="M32 2 H42 V12"/><path d="M42 32 V42 H32"/><path d="M12 42 H2 V32"/></svg>
+            <svg class="da-ic" viewBox="0 0 24 24"><circle cx="10" cy="10" r="7"/><path d="M15 15 L21 21"/></svg>
+          </div>
+          <div class="da-idx">03</div>
+          <h3 class="da-ttl">Senior review</h3>
+          <p class="da-desc">A human engineer checks every file — UX, accessibility, SEO.</p>
+          <span class="da-chip" data-text="Senior-led quality">Senior-led quality</span>
+        </li>
+        <li class="da-node" data-i="3">
+          <div class="da-mark" aria-hidden="true">
+            <svg class="da-brk" viewBox="0 0 44 44"><path d="M2 12 V2 H12"/><path d="M32 2 H42 V12"/><path d="M42 32 V42 H32"/><path d="M12 42 H2 V32"/></svg>
+            <svg class="da-ic" viewBox="0 0 24 24"><path d="M22 2 L2 9.5 L10 13 L13 21 L22 2 Z"/><path d="M22 2 L10 13"/></svg>
+          </div>
+          <div class="da-idx">04</div>
+          <h3 class="da-ttl">Ship</h3>
+          <p class="da-desc">A live product goes out — yours to keep, on a flat monthly plan.</p>
+          <span class="da-chip" data-text="You own the code">You own the code</span>
+        </li>
+      </ol>
+    </div>
+    <footer class="da-foot">
+      <p class="da-foot-line">Months of dev work, <em>handled in days.</em></p>
+      <span class="da-foot-meta">One flat subscription · cancel anytime</span>
+    </footer>
+    </div>
+  </div>
+</section>
+<script>
+(function(){
+  const sec = document.getElementById('what-you-get');
+  if(!sec) return;
+  const nodes = [...sec.querySelectorAll('.da-node')];
+  const pulse = sec.querySelector('.da-pulse');
+  const rail  = sec.querySelector('.da-rail');
+  const reduce = matchMedia('(prefers-reduced-motion:reduce)').matches;
+  sec.classList.add('js');
+  const mq = matchMedia('(max-width:880px)');
+  const ease = t => t<.5 ? 2*t*t : 1 - Math.pow(-2*t+2,2)/2;
+
+  const GLYPHS='ABCDEFGHJKLMNPRSTUVWXYZ0123456789/×';
+  let decodeTok=0;
+  function decode(el){ if(!el||reduce) return;
+    const full=el.dataset.text||el.textContent, tok=++decodeTok; let f=0;
+    const id=setInterval(()=>{ if(tok!==decodeTok){ clearInterval(id); return; }
+      f++; const shown=Math.floor(f/1.4);
+      el.textContent=full.split('').map((c,j)=> j<shown||c===' '||c==='×' ? c : GLYPHS[(Math.random()*GLYPHS.length)|0]).join('');
+      if(shown>=full.length){ el.textContent=full; clearInterval(id); } },22); }
+
+  let cur=-1;
+  function activate(i){ if(i===cur) return; cur=i;
+    nodes.forEach((n,k)=> n.classList.toggle('is-active', k===i));
+    const c=nodes[i] && nodes[i].querySelector('.da-chip'); if(c) decode(c); }
+
+  /* DESKTOP: the light is a lit segment of the SAME rail line, running along it (svg-path-draw principle). */
+  const railLine = sec.querySelector('.da-rail-line');
+  let rafId=0;
+  function stopSweep(){ if(rafId){ cancelAnimationFrame(rafId); rafId=0; } if(railLine) railLine.style.setProperty('--lop',0); }
+  function startSweep(){
+    stopSweep();
+    const INTRO=850, MOVE=1200, PAUSE=650, GAP=650, HALF=90;
+    const es = t => 0.5 - 0.5*Math.cos(Math.PI*Math.min(Math.max(t,0),1));   /* smooth ease-in-out (sine) */
+    let segs, idx=0, t0=null;
+    function setLight(px,op){ railLine.style.setProperty('--lx',(px-HALF)+'px'); railLine.style.setProperty('--lop',op); }
+    function build(){
+      const rr=rail.getBoundingClientRect();
+      const stops=nodes.map(n=>{ const m=n.querySelector('.da-mark').getBoundingClientRect(); return m.left + m.width/2 - rr.left; });
+      /* the light travels BETWEEN steps and fades OUT as it arrives — handing off into that step's shutter (bracket) draw. */
+      segs=[{t:'act',i:0},{t:'hold',d:INTRO}];
+      for(let i=1;i<stops.length;i++){
+        segs.push({t:'move',a:stops[i-1],b:stops[i],d:MOVE,i:i});
+        segs.push({t:'hold',d:PAUSE});
+      }
+      segs.push({t:'hold',d:GAP});
+    }
+    build(); activate(0); setLight(0,0);
+    function step(ts){ if(t0===null)t0=ts; const seg=segs[idx], el=ts-t0;
+      if(seg.t==='act'){ activate(seg.i); idx++; t0=ts; }
+      else if(seg.t==='hold'){ railLine.style.setProperty('--lop',0); if(el>=seg.d){ idx++; t0=ts; } }
+      else if(seg.t==='move'){ const p=Math.min(el/seg.d,1);
+        setLight(seg.a+(seg.b-seg.a)*es(p), Math.sin(p*Math.PI));   /* glow in leaving a step, out arriving at the next */
+        if(!seg.done && p>=0.8){ seg.done=true; activate(seg.i); }  /* hand off to the shutter as the light lands */
+        if(p>=1){ railLine.style.setProperty('--lop',0); idx++; t0=ts; } }
+      if(idx>=segs.length){ idx=0; t0=ts; build(); activate(0); }
+      rafId=requestAnimationFrame(step);
+    }
+    rafId=requestAnimationFrame(step);
+  }
+
+  /* MOBILE: active step = the one nearest the screen centre (scroll). */
+  let rafPending=false, scrollBound=false;
+  function centerActivate(){ const mid=innerHeight/2; let best=0, bd=Infinity;
+    nodes.forEach((n,k)=>{ const r=n.getBoundingClientRect(), d=Math.abs(r.top+r.height/2-mid); if(d<bd){ bd=d; best=k; } });
+    activate(best); }
+  function onScroll(){ if(rafPending) return; rafPending=true;
+    requestAnimationFrame(()=>{ rafPending=false; centerActivate(); }); }
+  function bindScroll(){ if(scrollBound) return; scrollBound=true; addEventListener('scroll', onScroll, {passive:true}); }
+  function unbindScroll(){ if(!scrollBound) return; scrollBound=false; removeEventListener('scroll', onScroll); }
+
+  function applyMode(){
+    sec.classList.add('is-in');
+    if(reduce){ stopSweep(); unbindScroll(); nodes.forEach(n=>n.classList.add('is-active')); return; }
+    if(mq.matches){ stopSweep(); bindScroll(); centerActivate(); }
+    else{ unbindScroll(); startSweep(); }
+  }
+  (mq.addEventListener ? mq.addEventListener('change', onMq) : mq.addListener(onMq));
+  function onMq(){ cur=-1; applyMode(); }
+
+  let started=false;
+  const io=new IntersectionObserver((es)=>es.forEach(e=>{ if(e.isIntersecting && !started){ started=true; io.disconnect(); applyMode(); } }), { threshold:.3 });
+  io.observe(sec);
+})();
+</script>
+
 <!-- ============ [07] PRICING ============ -->
 <section class="w-sec" id="pricing">
   <div class="w-wrap w-price-grid">
     <div class="w-price-intro w-rev">
-      <span class="w-label"><span class="br">[08]</span>&nbsp;The subscription</span>
+      <span class="w-label"><span class="br">[09]</span>&nbsp;The subscription</span>
       <h2>One flat subscription. Your entire <span class="w-dx" data-text="design &amp; dev">design &amp; dev</span> stack.</h2>
       <p>No headcount. No agency retainers. No surprise invoices. One predictable monthly fee unlocks an elite hybrid AI + human team on demand.</p>
       <div class="w-aw-spot">
@@ -1438,7 +1695,7 @@ body.menu-open{ overflow:hidden; }
 <section class="w-sec" id="faq">
   <div class="w-wrap w-faq-grid">
     <div class="w-faq-intro w-rev">
-      <span class="w-label"><span class="br">[09]</span>&nbsp;FAQ</span>
+      <span class="w-label"><span class="br">[10]</span>&nbsp;FAQ</span>
       <h2>Questions, <span class="w-dx" data-text="answered.">answered.</span></h2>
       <p>Still unsure? <a href="#final">Book a quick call</a>.</p>
     </div>
@@ -1464,7 +1721,7 @@ body.menu-open{ overflow:hidden; }
   <div class="w-wrap">
     <div class="w-final-box w-rev">
       <div>
-        <span class="w-label" style="margin-bottom:20px"><span class="br">[10]</span>&nbsp;Start a project</span>
+        <span class="w-label" style="margin-bottom:20px"><span class="br">[11]</span>&nbsp;Start a project</span>
         <h2 style="margin-top:18px">Ready to accelerate your <span class="w-dx" data-text="deployment?">deployment?</span></h2>
         <p>Book a quick 15-minute intro call to see exactly how much budget and dev time Duck.design can save your company this quarter.</p>
         <ul class="w-final-list">
